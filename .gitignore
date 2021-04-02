@@ -1,4 +1,11 @@
+## data folder:
+data/*
 
+## various folders:
+various/*
+
+
+# ----------------------------------------------------------------------- #
 # Created by https://www.toptal.com/developers/gitignore/api/r,macos
 # Edit at https://www.toptal.com/developers/gitignore?templates=r,macos
 
