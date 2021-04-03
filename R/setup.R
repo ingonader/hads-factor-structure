@@ -43,6 +43,11 @@ library(ggplot2)
 library(dplyr)
 library(lubridate)
 
+## ========================================================================= ##
+## load function definitions specific for this project
+## ========================================================================= ##
+
+source(file.path(path_r, "function-library.R"))
 
 ## ========================================================================= ##
 ## fonts using showtext
