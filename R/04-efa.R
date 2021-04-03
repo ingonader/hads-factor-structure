@@ -1,0 +1,99 @@
+## ######################################################################### ##
+## Exploratory Factor Analysis
+## ######################################################################### ##
+
+# rm(list = ls())
+# rstudioapi::restartSession()
+
+#' NOTE:
+#' This script assumes that the following scripts have been run:
+#' * setup scripts
+#' * data load scripts
+#' * data preparation scripts
+
+source("./R/setup.R")
+source(file.path(path_r, "01-data-load-raw.R"))
+source(file.path(path_r, "02-data-prep.R"))
+
+## ========================================================================= ##
+## load additional packages
+## ========================================================================= ##
+
+library(nFactors)
+library(psych)
+
+
+## ========================================================================= ##
+## exploratory factor analysis
+## ========================================================================= ##
+
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
+## determine number of factors
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
+
+## define dataset for exploratory factor analysis:
+dat_efa <- dat_fa[varnames_item_hads]
+#dat_efa <- dat_fa[varnames_item_emons]
+
+## check that dataset has no missings:
+assertthat::are_equal(
+  dim(dat_efa),
+  dim(na.omit(dat_efa))
+)
+
+## calculate correlation matrix:
+cormat_efa <- cor(dat_efa)
+
+## calculate eigenvalues (and eigenvectors):
+ev <- eigen(cormat_efa)
+ev$values
+
+## data for scree plot with ggplot:
+dat_plot_scree <- data.frame(
+  "n" = seq_along(ev$values),
+  "eigenvalue" = ev$values
+)
+
+## scree plot:
+dat_plot_scree %>%
+  ggplot(aes(x = n, y = eigenvalue)) + geom_line() + geom_point()
+
+## scree plot with parallel analysis:
+ap <- parallel(subject = nrow(dat_efa), var = ncol(dat_efa), rep = 100, cent=0.05)
+nS <- nScree(x = ev$values, aparallel = ap$eigen$qevpea)
+plotnScree(nS)
+
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
+## EFA: orthogonal solution
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
+
+## orthogonal factors:
+fit_efa_ortho <- fa(dat_efa, nfactors = 2, rotate = "varimax", fm = "ml")
+fit_efa_ortho
+
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
+## EFA: solution with correlated factors
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
+
+## correlated factors:
+fit_efa_rot <- fa(dat_efa, nfactors = 2, rotate = "oblimin", fm = "ml")
+fit_efa_rot
+
+
+
+# ## base factanal:
+# 
+# ## orthogonal factors:
+# fit_efa_ortho <- factanal(dat_efa, factors = 2, rotation = "varimax")
+# fit_efa_ortho
+# 
+# ## unrotated solution:
+# fit_efa_norot <- factanal(dat_efa, factors = 2, rotation = "none")
+# fit_efa_norot
+# 
+# ## correlated factors:
+# fit_efa <- factanal(dat_efa, factors = 2, rotation = "promax")
+# fit_efa
+
+
+
