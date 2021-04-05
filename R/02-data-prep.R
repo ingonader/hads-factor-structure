@@ -131,6 +131,15 @@ varnames_item_emons <- varnames_item_hads %>% {
   .[!grepl("07|11|10|14", .)]
 }
 
+## define simple variable names for hads items and ... 
+varnames_fa <- stringr::str_replace_all(
+  varnames_item_hads,
+  ".*?([0-9]{2}).*",
+  "i_\\1"
+)
+## ... copy relevant items into new variables with simple names:
+dat_all[varnames_fa] <- dat_all[varnames_item_hads]
+
 
 ## ========================================================================= ##
 ## sanity checks
