@@ -87,10 +87,10 @@ models_cfa <- list(
       f3 =~ i_02 + i_04 + i_06 + i_08 + i_12  ## depression
       ## TODO: check if correlated or uncorrelated
   ",
-  "emons_3f_cor" = "
+  "emons_2f_cor" = "
       ## Emons et al., 2012, 3 factors (shortened)
       f1 =~ i_01 + i_03 + i_05 + i_09 + i_13  ## anxiety
-      f3 =~ i_02 + i_04 + i_06 + i_08 + i_12  ## depression
+      f2 =~ i_02 + i_04 + i_06 + i_08 + i_12  ## depression
       ## TODO: check if correlated or uncorrelated
   "
 )
