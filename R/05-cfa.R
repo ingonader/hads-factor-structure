@@ -108,23 +108,6 @@ det(lavInspect(fit_cfa, "cov.lv"))
 eigen(lavInspect(fit_cfa, "cov.lv"))$values
 
 
-#' Estimate CFA model and return vector of fit indices 
-#'
-#' @param model_def A string (character vector of length one) containing
-#'   the model definition as expected by lavaan.
-#' @param data A data.frame with the data used to estimate the lavaan
-#'   model.
-#'
-#' @return A vector with all fit indices as returned by lavaan.
-#' @export
-#'
-#' @examples
-get_fit_indices <- function(model_def, data) {
-  fit_cfa <- cfa(model_def, data = data)
-  fit_cfa_summary <- summary(fit_cfa, standardized = TRUE, fit.measures = TRUE)
-  return(fit_cfa_summary$FIT)
-}
-
 ## get fit indices of all models:
 res <- models_cfa %>% {
   bind_cols(
