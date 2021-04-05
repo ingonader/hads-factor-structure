@@ -53,6 +53,10 @@ check_valrange <- function(df, val_rng) {
 
 
 #' Estimate CFA model and return vector of fit indices 
+#' 
+#' Takes a model definition string in lavaan syntax, estimates the
+#' specified model via the \code{cfa()} function and returns the 
+#' fit indices.
 #'
 #' @param model_def A string (character vector of length one) containing
 #'   the model definition as expected by lavaan.
