@@ -62,15 +62,57 @@ check_valrange <- function(df, val_rng) {
 #'   the model definition as expected by lavaan.
 #' @param data A data.frame with the data used to estimate the lavaan
 #'   model.
+#' @param group A grouping variable (character vector of lenght one) 
+#'   that is passed on to lavaan's \code{cfa()} function. Defaults to
+#'   NULL, which means no groups.
 #'
 #' @return A vector with all fit indices as returned by lavaan.
 #' @export
 #'
 #' @examples
-get_fit_indices <- function(model_def, data) {
-  fit_cfa <- cfa(model_def, data = data)
-  fit_cfa_summary <- summary(fit_cfa, standardized = TRUE, fit.measures = TRUE)
-  return(fit_cfa_summary$FIT)
+get_fit_indices <- function(model_def, data, group = NULL) {
+  fit_cfa <- tryCatch(
+    withCallingHandlers(
+      {
+        status <- "success"
+        status_msg <- ""
+        list(
+          "model" = cfa(model_def, data = data, group = group),
+          "status" = status,
+          "status_msg" = status_msg
+        )
+      },
+      warning = function(e) {
+        ## overwrite status_msg in above environment:
+        status <<- "WARNING"
+        status_msg <<- paste0(e)
+        ## and resume processing:
+        invokeRestart("muffleWarning")
+      }
+    ),
+    error = function(e) {
+      return(list(
+        "model" = NA,
+        status = "ERROR",
+        status_msg = paste0(e)
+      ))
+    }, 
+    finally = {
+    }
+  )
+  ## redirect stdout to file (to avoid cluttering the screen):
+  sink("output.txt", type = "output")
+  fit_cfa_summary <- summary(fit_cfa$model, standardized = TRUE, fit.measures = TRUE)
+  ## output back to screen:
+  sink()
+  ## convert results to data.frame with one row:
+  ret <- bind_rows(fit_cfa_summary$FIT)
+  ## add model fit to data.frame:
+  ret$fit <- list(fit_cfa$model)
+  ## add status message (warning/error) to fit indices:
+  ret$status <- fit_cfa$status
+  ret$status_msg <- fit_cfa$status_msg
+  return(ret)
 }
 
 
