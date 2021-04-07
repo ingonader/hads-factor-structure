@@ -4,6 +4,9 @@ output.txt
 ## data folder:
 data/*
 
+## old code snippets:
+R/_old/*
+
 ## various folders:
 various/*
 
