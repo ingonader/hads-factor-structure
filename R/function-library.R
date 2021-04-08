@@ -65,19 +65,26 @@ check_valrange <- function(df, val_rng) {
 #' @param group A grouping variable (character vector of lenght one) 
 #'   that is passed on to lavaan's \code{cfa()} function. Defaults to
 #'   NULL, which means no groups.
+#' @param std.lv Determines if variances are fixed to 1 (if \code{TRUE}) 
+#'   or if first factor loading is fixed to 1 (if \code{FALSE}). 
+#'   Passed to lavaans \code{cfa()} function, but defaults to 
+#'   \code{TRUE} for this funciton (instead of \code{FALSE} as in 
+#'   the \code{cfa()} function).
+#' @param ... Additional parameters passed to lavaaan's \code{cfa()} 
+#'   function
 #'
 #' @return A vector with all fit indices as returned by lavaan.
 #' @export
 #'
 #' @examples
-get_fit_indices <- function(model_def, data, group = NULL) {
+get_fit_indices <- function(model_def, data, group = NULL, std.lv = TRUE, ...) {
   fit_cfa <- tryCatch(
     withCallingHandlers(
       {
         status <- "success"
         status_msg <- ""
         list(
-          "model" = cfa(model_def, data = data, group = group),
+          "model" = cfa(model_def, data = data, group = group, std.lv = std.lv, ...),
           "status" = status,
           "status_msg" = status_msg
         )
