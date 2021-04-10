@@ -188,5 +188,38 @@ dat_fa <- dat_fa %>%
   filter((yr >= 2013) | is.na(yr))
 nrow(dat_fa)
 
+## ========================================================================= ##
+## add grouping variables (after exclusions)
+## ========================================================================= ##
+
+## median date:
+date_med <- median(dat_all$t1_datum, na.rm = TRUE)
+
+## add grouping variables:
+dat_fa <- dat_fa %>%
+  mutate(
+    t1_alter_grp2 = cut_number(t1_alter_both, n = 2),
+    t1_datum_grp2 = ifelse(
+      t1_datum <= date_med,
+      paste0("<=", date_med),
+      paste0(">", date_med)
+    ) %>% 
+      as.factor()
+  )
+
+# check groupings:
+# dat_all$t1_alter_grp3
+# dat_all$t1_datum_grp2 %>% table(useNA = "if")
+# dat_all %>% group_by(t1_datum_grp2) %>%
+#   summarize(date_min = min(t1_datum, na.rm = TRUE),
+#             date_max = max(t1_datum, na.rm = TRUE),
+#             n = n()) %>%
+#   ungroup() %>%
+#   arrange(1) %>%
+#   mutate(lbl = paste0(date_min, "_-_", date_max))
+# dat_all %>% group_by(krebstyp_grp3) %>% summarize(paste(unique(krebstyp), collapse = ","))
+# dat_all %>% group_by(hads_grp2ext) %>% summarize(ha = max(t1_hads_skalaa_summe_new, na.rm = TRUE),
+#                                                  hd = max(t1_hads_skalad_summe_new, na.rm = TRUE))
+
 
 
