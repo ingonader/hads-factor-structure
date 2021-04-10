@@ -49,19 +49,20 @@ dat_all <- dat_raw
 ## ========================================================================= ##
 
 ## add age:
-dat_all <- dat_all %>% mutate(
-  t1_alter_calc = time_length(dat_all$t1_datum - dat_all$geburtsdatum, "years"),
-  t1_alter_both = coalesce(floor(t1_alter_calc), t1_alter)
-)
+dat_all <- dat_all %>% 
+  mutate(
+    t1_alter_calc = time_length(dat_all$t1_datum - dat_all$geburtsdatum, "years"),
+    t1_alter_both = coalesce(floor(t1_alter_calc), t1_alter)
+  )
+
+## check t1_alter with calculated age:
+# dat_all %>% select(geburtsdatum, t1_datum, t1_alter_calc, t1_alter) %>% na.omit()
 
 ## add study year:
 dat_all <- dat_all %>%
   mutate(
     yr = lubridate::year(t1_datum)
-)
-
-## check t1_alter with calculated age:
-# dat_all %>% select(geburtsdatum, t1_datum, t1_alter_calc, t1_alter) %>% na.omit()
+  )
 
 ## change dbl+lbl variables to factors where appropriate:
 varnames_convert_factor <- c(
@@ -72,7 +73,7 @@ varnames_convert_factor <- c(
   "t1_psy_erkrank_dich", "t1_psy_erkrank_label",  "t1_info_erkrankung", "t1_info_behandlung", 
   "t1_info_psychotherapie", "t1_info_selbsthilfegruppen", "t1_info_andere", 
   "diagnosen", "diagnose", "diagnose_final",
-  "onkodiagnosen", "tumorklassifikation", "nodes", 
+  "onkodiagnosen", "tumorklassifikation",  "tumorart", "nodes", 
   "nebendiagnose"
 )
 dat_all <- dat_all %>% mutate_at(
