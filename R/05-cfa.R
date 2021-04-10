@@ -36,7 +36,7 @@ models_cfa <- list(
       f1 =~ i_01 + i_03 + i_05 + i_07 + i_09 + i_11 + i_13  ## anxiety
       f2 =~ i_02 + i_04 + i_06 + i_08 + i_10 + i_12 + i_14  ## depression
   ",
-  "razavi_1f_cor" = paste0(
+  "razavi_1f" = paste0(
      "## Razavi et al., 1990
       f1 =~ ", paste(varnames_fa, collapse = " + ")
   ),
@@ -85,13 +85,11 @@ models_cfa <- list(
       f1 =~ i_01 + i_03 + i_05 + i_09 + i_13  ## anxiety
       f2 =~ i_07 + i_11 + i_14                ## restlessness
       f3 =~ i_02 + i_04 + i_06 + i_08 + i_12  ## depression
-      ## TODO: check if correlated or uncorrelated
   ",
   "emons_2f_cor" = "
       ## Emons et al., 2012, 3 factors (shortened)
       f1 =~ i_01 + i_03 + i_05 + i_09 + i_13  ## anxiety
       f2 =~ i_02 + i_04 + i_06 + i_08 + i_12  ## depression
-      ## TODO: check if correlated or uncorrelated
   "
 )
 
@@ -103,6 +101,9 @@ models_cfa <- list(
 wch_model <- "dunbar_3f_cor"  ## covariance matrix is not positive definite (due to sampling error), but model estimation runs fine
 fit_cfa <- cfa(models_cfa[[wch_model]], data = dat_fa)
 fit_cfa_summary <- summary(fit_cfa, standardized = TRUE, fit.measures = TRUE)
+fit_cfa_summary$FIT
+bind_rows(fit_cfa_summary$FIT)
+
 lavInspect(fit_cfa, "cov.lv")
 det(lavInspect(fit_cfa, "cov.lv"))
 eigen(lavInspect(fit_cfa, "cov.lv"))$values
