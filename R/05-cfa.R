@@ -196,13 +196,15 @@ fit_constrained <- function(lavaan_str, data, group) {
       df_diff_0 = df - df[1],
       df_diff = df - lag(df),
       cfi_diff_0 = cfi - cfi[1],
-      cfi_diff = cfi - lag(cfi)
+      cfi_diff = cfi - lag(cfi),
+      rmsea_diff = rmsea - lag(rmsea),
+      srmr_diff = srmr - lag(srmr)
     )
   return(fit_cfa_constrained)
 }
 # debug(fit_constrained)
 # undebug(fit_constrained)
-fit_constrained(models_cfa[[1]], data = dat_fa, group = "t1_geschlecht", std.lv = FALSE)
+fit_constrained(models_cfa[[1]], data = dat_fa, group = "t1_geschlecht")
 
 # ## check getting estimated models out of data.frame:
 # tmp <- fit_constrained(models_cfa[[1]], data = dat_fa, group = "t1_geschlecht", std.lv = TRUE)
@@ -237,12 +239,12 @@ groups_cfa <- c(
 # )
 
 ## define function to fit constrained models for all grouping variables in one specific model:
-fit_groups <- function(lavaan_str, data, group_cfa, std.lv) {
+fit_groups <- function(lavaan_str, data, group_cfa) {
   purrr::map_dfr(
-    groups_cfa, ~ fit_constrained(lavaan_str, data = data, group = .x, std.lv = std.lv)
+    groups_cfa, ~ fit_constrained(lavaan_str, data = data, group = .x)
   )
 }
-tmp3 <- fit_groups(models_cfa[[4]], data = dat_fa, group_cfa = group_cfa, std.lv = TRUE)
+tmp3 <- fit_groups(models_cfa[[4]], data = dat_fa, group_cfa = group_cfa)
 tmp3
 
 ## define how many constrained models are fitted for each model: 
@@ -254,7 +256,7 @@ res <- models_cfa %>% {
     model = rep(names(.), each = length(groups_cfa) * n_mi_models),
     ## get results data:
     purrr::map_dfr(
-      ., ~ fit_groups(.x, data = dat_fa, group_cfa = group_cfa, std.lv = FALSE)
+      ., ~ fit_groups(.x, data = dat_fa, group_cfa = group_cfa)
     )
   )
 }
