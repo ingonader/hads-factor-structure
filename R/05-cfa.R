@@ -2,6 +2,9 @@
 ## Confirmatory Factor Analysis
 ## ######################################################################### ##
 
+#' TODO:
+#' * also add chisq-test between nested models, e.g. with semTools:::difftest()
+
 # rm(list = ls())
 # rstudioapi::restartSession()
 
@@ -269,29 +272,44 @@ res %>% filter(status != "success") %>%
   select(n, everything())
 res %>% filter(status != "success") %>% pull(status_msg) %>% unique() %>% cat()
 
-## first try to plot invariance results:
-res %>% 
-  ggplot(aes(x = forcats::fct_relevel(constraint,
-                                      "configurational", "metric", "scalar", "strict"),
-             y = cfi_diff_0, 
-             color = group, 
-             group = group)) + 
-  geom_line(size = 1.2, alpha = .5) +
-  geom_hline(yintercept = -0.01, linetype = "dashed", color = "darkgrey", alpha = .8) + 
-  facet_wrap(vars(model))
+## ------------------------------------------------------------------------- ##
+## stacked bar plot of delta-CFIs
+## ------------------------------------------------------------------------- ##
 
-## stacked bar plots:
-res %>% 
-  filter(group != "hads_grp2ext",
-         group != "krebstyp_grp3") %>%
-  ggplot(aes(x = forcats::fct_relevel(constraint,
-                                      "configurational", "metric", "scalar", "strict"),
+## create plotting data:
+dat_plot <- res %>%
+  mutate(
+    invariance_level = paste0(lag(constraint), "\nto ", constraint)
+  ) %>% 
+  filter(constraint != "configurational")
+
+## plot delta CFI:
+dat_plot %>%
+  ggplot(aes(x = forcats::fct_relevel(invariance_level,
+                                      "configurational\nto metric", 
+                                      "metric\nto scalar", 
+                                      "scalar\nto strict"),
              y = cfi_diff, 
              color = group,
              fill = group, 
              group = group)) + 
-  geom_bar(position="dodge", stat="identity") +
+  geom_bar(position="dodge", stat="identity", width = .4) +
   geom_hline(yintercept = -0.01, linetype = "dashed", color = "darkgrey", alpha = .8) + 
-  facet_wrap(vars(model))
+  scale_fill_discrete(
+    name = "Grouping Variable",
+    breaks = c("t1_alter_grp2", "t1_datum_grp2", "t1_geschlecht", "tumorart"),
+    labels = c("Age", "Time of reponse", "Sex", "Tumor type")
+  ) +
+  scale_color_discrete(
+    name = "Grouping Variable",
+    breaks = c("t1_alter_grp2", "t1_datum_grp2", "t1_geschlecht", "tumorart"),
+    labels = c("Age", "Time of reponse", "Sex", "Tumor type")
+  ) +
+  facet_wrap(vars(model)) +
+  labs(
+    x = "",
+    y = expression(Delta*"CFI")
+  ) +
+  theme_light()
 
 
