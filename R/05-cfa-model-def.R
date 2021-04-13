@@ -97,15 +97,15 @@ models_cfa <- list(
 #' * check if model specification for dunbar's hierarchical model is correct!
 #' * check if model specification for dunbar's correlated model is correct (warning msg!)
 
-## estimate one model of the list above:
-wch_model <- "dunbar_3f_cor"  ## covariance matrix is not positive definite (due to sampling error), but model estimation runs fine
-fit_cfa <- cfa(models_cfa[[wch_model]], data = dat_fa)
-fit_cfa_summary <- summary(fit_cfa, standardized = TRUE, fit.measures = TRUE)
-fit_cfa_summary$FIT
-bind_rows(fit_cfa_summary$FIT)
-
-lavInspect(fit_cfa, "cov.lv")
-det(lavInspect(fit_cfa, "cov.lv"))
-eigen(lavInspect(fit_cfa, "cov.lv"))$values
+# ## estimate one model of the list above:
+# wch_model <- "dunbar_3f_cor"  ## covariance matrix is not positive definite (due to sampling error), but model estimation runs fine
+# fit_cfa <- cfa(models_cfa[[wch_model]], data = dat_fa)
+# fit_cfa_summary <- summary(fit_cfa, standardized = TRUE, fit.measures = TRUE)
+# fit_cfa_summary$FIT
+# bind_rows(fit_cfa_summary$FIT)
+# 
+# lavInspect(fit_cfa, "cov.lv")
+# det(lavInspect(fit_cfa, "cov.lv"))
+# eigen(lavInspect(fit_cfa, "cov.lv"))$values
 
 
