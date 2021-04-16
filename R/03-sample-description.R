@@ -57,4 +57,15 @@ range(dat_fa$t1_alter_calc, na.rm = TRUE)
 range(dat_fa$t1_alter_both, na.rm = TRUE)
 
 
+## ========================================================================= ##
+## test assumptions
+## ========================================================================= ##
 
+library(MVN)
+
+## univariate normality:
+dat_fa[varnames_fa] %>% psych::multi.hist()
+dat_fa[varnames_fa] %>% lapply(hist, nclass = 4)
+
+## multivariate normality:
+dat_fa[varnames_fa] %>% mvn()
