@@ -202,7 +202,7 @@ dat_plot <- res %>%
   filter(constraint != "configurational")
 
 ## plot delta CFI:
-dat_plot %>%
+plot_mi_ml <- dat_plot %>%
   ggplot(aes(x = forcats::fct_relevel(invariance_level,
                                       "configurational\nto metric", 
                                       "metric\nto scalar", 
@@ -229,5 +229,7 @@ dat_plot %>%
     y = expression(Delta*"CFI")
   ) +
   theme_light()
+plot_mi_ml
 
+ggsave(filename = file.path(path_plot, "fig-mi-01-ml.jpg"), width = 8, height = 5, scale = 1.5, dpi = 600)
 
