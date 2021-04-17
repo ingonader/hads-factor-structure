@@ -4,6 +4,9 @@ output.txt
 ## data folder:
 data/*
 
+## plots:
+plot/*
+
 ## old code snippets:
 R/_old/*
 
