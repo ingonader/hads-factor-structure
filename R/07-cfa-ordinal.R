@@ -244,7 +244,7 @@ dat_plot <- res %>%
   filter(constraint != "configurational")
 
 ## plot delta CFI:
-dat_plot %>%
+plot_mi_ordinal <- dat_plot %>%
   ggplot(aes(x = forcats::fct_relevel(invariance_level,
                                       "configurational\nto metric", 
                                       "metric\nto scalar"),
@@ -272,5 +272,8 @@ dat_plot %>%
     y = expression(Delta*chi*"^2 per df")
   ) +
   theme_light()
+plot_mi_ordinal
+
+ggsave(filename = file.path(path_plot, "fig-mi-03-ordinal.jpg"), width = 8, height = 5, scale = 1.5, dpi = 600)
 
 
