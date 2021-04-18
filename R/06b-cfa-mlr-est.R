@@ -34,14 +34,14 @@ fit_cfa_summary$FIT
 bind_rows(fit_cfa_summary$FIT)
 
 ## get fit indices of all models:
-res <- models_cfa %>% {
+res_cfa_mlr <- models_cfa %>% {
   bind_cols(
     model = names(.),
     purrr::map_dfr(., get_fit_indices, dat_fa, estimator = "MLR")
     )
 }
-res %>% select(model, npar, cfi, cfi.scaled, cfi.robust, rmsea, rmsea.scaled, rmsea.robust, status, status_msg)
-res %>% select(model, npar, cfi.robust, rmsea.robust, status)
+res_cfa_mlr %>% select(model, npar, cfi, cfi.scaled, cfi.robust, rmsea, rmsea.scaled, rmsea.robust, status, status_msg)
+res_cfa_mlr %>% select(model, npar, cfi.robust, rmsea.robust, status)
 
 #' robust RMSEA and CFI values are computed following 
 #' Brosseau-Liard, P. E., Savalei, V., and Li, L. (2012), and 
@@ -51,7 +51,7 @@ res %>% select(model, npar, cfi.robust, rmsea.robust, status)
 #' -- Yves Rosseel, Sept 2016
 
 ## check warnings:
-res %>% filter(status != "success") %>% pull(status_msg) %>% cat()
+res_cfa_mlr %>% filter(status != "success") %>% pull(status_msg) %>% cat()
 
 
 ## ========================================================================= ##
@@ -172,7 +172,7 @@ tmp3
 ## define how many constrained models are fitted for each model: 
 n_mi_models <- 4
 ## fit all constrained models for all grouping variables:
-res <- models_cfa %>% {
+res_mi_mlr <- models_cfa %>% {
   bind_cols(
     ## get model names from list, repeated for the number of results from fit_groups:
     model = rep(names(.), each = length(groups_cfa) * n_mi_models),
@@ -182,21 +182,21 @@ res <- models_cfa %>% {
     )
   )
 }
-res %>% print(n = 50)
+res_mi_mlr %>% print(n = 50)
 
 ## check warnings:
-res %>% filter(status != "success") %>% 
+res_mi_mlr %>% filter(status != "success") %>% 
   group_by(status, model, group) %>% 
   count() %>% 
   select(n, everything())
-res %>% filter(status != "success") %>% pull(status_msg) %>% unique() %>% cat()
+res_mi_mlr %>% filter(status != "success") %>% pull(status_msg) %>% unique() %>% cat()
 
 ## ------------------------------------------------------------------------- ##
 ## stacked bar plot of delta-CFIs
 ## ------------------------------------------------------------------------- ##
 
 ## create plotting data:
-dat_plot <- res %>%
+dat_plot <- res_mi_mlr %>%
   mutate(
     invariance_level = paste0(lag(constraint), "\nto ", constraint)
   ) %>% 

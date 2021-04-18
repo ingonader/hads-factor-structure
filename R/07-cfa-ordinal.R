@@ -48,17 +48,17 @@ cfa(models_cfa[[wch_model]], data = dat_fa, estimator = "WLSMV", ordered = TRUE,
 #' * rmsea.scaled
 
 ## get fit indices of all models:
-res <- models_cfa %>% {
+res_cfa_ordinal <- models_cfa %>% {
   bind_cols(
     model = names(.),
     purrr::map_dfr(., get_fit_indices, dat_fa, estimator = "WLSMV", ordered = TRUE)
     )
 }
-res %>% select(model, npar, cfi, cfi.scaled, rmsea, rmsea.scaled, srmr, status, status_msg)
-res %>% select(model, npar, cfi.scaled, rmsea.scaled, status)
+res_cfa_ordinal %>% select(model, npar, cfi, cfi.scaled, rmsea, rmsea.scaled, srmr, status, status_msg)
+res_cfa_ordinal %>% select(model, npar, cfi.scaled, rmsea.scaled, status)
 
 ## check warnings:
-res %>% filter(status != "success") %>% pull(status_msg) %>% cat()
+res_cfa_ordinal %>% filter(status != "success") %>% pull(status_msg) %>% cat()
 
 ## ========================================================================= ##
 ## measurement invariance
@@ -199,7 +199,7 @@ tmp3
 ## define how many constrained models are fitted for each model: 
 n_mi_models <- 3
 ## fit all constrained models for all grouping variables:
-res <- models_cfa %>% {
+res_mi_ordinal <- models_cfa %>% {
   bind_cols(
     ## get model names from list, repeated for the number of results from fit_groups:
     model = rep(names(.), each = length(groups_cfa) * n_mi_models),
@@ -209,17 +209,17 @@ res <- models_cfa %>% {
     )
   )
 }
-res %>% print(n = 50)
+res_mi_ordinal %>% print(n = 50)
 
 ## check warnings:
-res %>% filter(status != "success") %>% 
+res_mi_ordinal %>% filter(status != "success") %>% 
   group_by(status, model, group) %>% 
   count() %>% 
   select(n, everything())
-res %>% filter(status != "success") %>% pull(status_msg) %>% unique() %>% cat()
+res_mi_ordinal %>% filter(status != "success") %>% pull(status_msg) %>% unique() %>% cat()
 
 ## remove p value for configurational invariance and add chisq per df (reduced chi squared statistic):
-res <- res %>%
+res_mi_ordinal <- res_mi_ordinal %>%
   mutate(
     anova_p = ifelse(constraint == "configurational", NA, round(anova_p, 3)),
     anova_chisq_per_df = anova_chisq / anova_df,
@@ -227,7 +227,7 @@ res <- res %>%
     chisq_scaled_diff_per_df = chisq_scaled_diff / df_scaled_diff
   )
 
-res %>% 
+res_mi_ordinal %>% 
   select(model, group, grps_n, constraint, anova_chisq, anova_df, anova_chisq_per_df, anova_p) %>% 
   print(n = 200)
 
@@ -237,7 +237,7 @@ res %>%
 ## ------------------------------------------------------------------------- ##
 
 ## create plotting data:
-dat_plot <- res %>%
+dat_plot <- res_mi_ordinal %>%
   mutate(
     invariance_level = paste0(lag(constraint), "\nto ", constraint)
   ) %>% 

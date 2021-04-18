@@ -30,17 +30,17 @@ library(lavaan)
 
 
 ## get fit indices of all models:
-res <- models_cfa %>% {
+res_cfa_ml <- models_cfa %>% {
   bind_cols(
     model = names(.),
     purrr::map_dfr(., get_fit_indices, dat_fa)
     )
 }
-res %>% select(model, npar, cfi, aic, bic, rmsea, status, status_msg)
-res %>% select(model, npar, cfi, rmsea, status)
+res_cfa_ml %>% select(model, npar, cfi, aic, bic, rmsea, status, status_msg)
+res_cfa_ml %>% select(model, npar, cfi, rmsea, status)
 
 ## check warnings:
-res %>% filter(status != "success") %>% pull(status_msg) %>% cat()
+res_cfa_ml %>% filter(status != "success") %>% pull(status_msg) %>% cat()
 
 
 ## ========================================================================= ##
@@ -171,7 +171,7 @@ tmp3
 ## define how many constrained models are fitted for each model: 
 n_mi_models <- 4
 ## fit all constrained models for all grouping variables:
-res <- models_cfa %>% {
+res_mi_ml <- models_cfa %>% {
   bind_cols(
     ## get model names from list, repeated for the number of results from fit_groups:
     model = rep(names(.), each = length(groups_cfa) * n_mi_models),
@@ -181,21 +181,21 @@ res <- models_cfa %>% {
     )
   )
 }
-res %>% print(n = 50)
+res_mi_ml %>% print(n = 50)
 
 ## check warnings:
-res %>% filter(status != "success") %>% 
+res_mi_ml %>% filter(status != "success") %>% 
   group_by(status, model, group) %>% 
   count() %>% 
   select(n, everything())
-res %>% filter(status != "success") %>% pull(status_msg) %>% unique() %>% cat()
+res_mi_ml %>% filter(status != "success") %>% pull(status_msg) %>% unique() %>% cat()
 
 ## ------------------------------------------------------------------------- ##
 ## stacked bar plot of delta-CFIs
 ## ------------------------------------------------------------------------- ##
 
 ## create plotting data:
-dat_plot <- res %>%
+dat_plot <- res_mi_ml %>%
   mutate(
     invariance_level = paste0(lag(constraint), "\nto ", constraint)
   ) %>% 
