@@ -45,6 +45,16 @@ models_cfa <- list(
       f1 =~ i_01 + i_03 + i_05 + i_09 + i_11 + i_13                ## anxiety
       f2 =~ i_02 + i_04 + i_06 + i_07 + i_08 + i_10 + i_12 + i_14  ## depression
   ",
+  "zigmond_mod01_2f_cor" = "
+      ## 2 correlated factors, item 7 excluded
+      f1 =~ i_01 + i_03 + i_05 + i_09 + i_11 + i_13          ## anxiety
+      f2 =~ i_02 + i_04 + i_06 + i_08 + i_10 + i_12 + i_14   ## depression
+  ",
+  "zigmond_mod02_2f_cor" = "
+      ## 2 correlated factors, item 7 excluded
+      f1 =~ i_01 + i_03 + i_05 + i_09 + i_11 + i_13          ## anxiety
+      f2 =~ i_02 + i_04 + i_06 + i_08 + i_12 + i_14          ## depression
+  ",
   "dunbar_3f_cor" = "
       ## Dunbar et al., 2000, correlated factors, item 7 loads to 2 factors
       f1 =~ i_03 + i_09 + i_13                                     ## autonomic anxiety
@@ -74,12 +84,6 @@ models_cfa <- list(
       f1 ~~ 0*f3
       f2 ~~ 0*f3
   ",
-  # "friedman_2f_ortho" = "
-  #     ## Friedman et al., 2001, 2 uncorrelated factors, item 7 excluded
-  #     f1 =~ i_01 + i_03 + i_05 + i_09 + i_11 + i_13          ## anxiety
-  #     f2 =~ i_02 + i_04 + i_06 + i_08 + i_10 + i_12 + i_14   ## depression
-  #     f1 ~~ 0*f2
-  # ",
   "caci_3f_cor" = "
       ## Caci et al., 2003, 3 factors
       f1 =~ i_01 + i_03 + i_05 + i_09 + i_13  ## anxiety
