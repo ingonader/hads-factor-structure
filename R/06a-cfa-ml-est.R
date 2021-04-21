@@ -64,7 +64,8 @@ fit_constrained <- function(lavaan_str, data, group) {
   group_miss <- is.na(data[[group]])
   data <- data[!group_miss, ]
   ## get number of groups from data:
-  n_grps <- data[[group]] %>% unique() %>% length()
+  grps <- data[[group]] %>% unique()
+  n_grps <- grps %>% length()
   ## get sample size of each group as string:
   grps_n <- data[[group]] %>% 
     table(useNA = "if") %>%
@@ -97,6 +98,20 @@ fit_constrained <- function(lavaan_str, data, group) {
                     group.equal = c("loadings", "intercepts", "residuals")) %>%
       as.character()
   )
+  ## first, fit model in each group separately:
+  fit_cfa_group <- seq_along(grps) %>% {
+    bind_cols(
+      group = group,
+      grps = n_grps,
+      grps_n = grps_n,
+      constraint = paste0("group ", ., ": ", grps[.]),
+      purrr::map_dfr(.,
+                     ~ get_fit_indices(lavaan_str, 
+                                       data = data %>% filter((!!as.name(group)) == grps[.x]),
+                                       group = NULL)
+      )
+    )
+  }
   ## fit models and get fit indices:
   ## NOTE: std.lv will be ignored if ID.fac is specified above
   fit_cfa_constrained <- models_constrained %>% 
@@ -121,11 +136,21 @@ fit_constrained <- function(lavaan_str, data, group) {
       rmsea_diff = rmsea - lag(rmsea),
       srmr_diff = srmr - lag(srmr)
     )
-  return(fit_cfa_constrained)
+  ## combine group fits and contrained fits:
+  varnames_diffvars_nonconvert <- "anova_diff"
+  varnames_diffvars <- setdiff(names(fit_cfa_constrained), c(names(fit_cfa_group), varnames_diffvars_nonconvert))
+  fit_cfa_constrained <- fit_cfa_constrained %>% 
+    mutate_at(vars(varnames_diffvars), as.numeric)
+  fit_cfa_group[, c(varnames_diffvars, varnames_diffvars_nonconvert)] <- NA
+  fit_cfa_all <- bind_rows(
+    fit_cfa_group,
+    fit_cfa_constrained
+  )
+  return(fit_cfa_all)
 }
 # debug(fit_constrained)
 # undebug(fit_constrained)
-fit_constrained(models_cfa[[1]], data = dat_fa, group = "t1_geschlecht")
+# fit_constrained(models_cfa[[1]], data = dat_fa, group = "t1_geschlecht")
 
 # ## check getting estimated models out of data.frame:
 # tmp <- fit_constrained(models_cfa[[1]], data = dat_fa, group = "t1_geschlecht", std.lv = TRUE)
@@ -165,20 +190,22 @@ fit_groups <- function(lavaan_str, data, group_cfa) {
     groups_cfa, ~ fit_constrained(lavaan_str, data = data, group = .x)
   )
 }
-tmp3 <- fit_groups(models_cfa[[4]], data = dat_fa, group_cfa = group_cfa)
-tmp3
+# tmp3 <- fit_groups(models_cfa[[4]], data = dat_fa, group_cfa = group_cfa)
+# tmp3
 
-## define how many constrained models are fitted for each model: 
-n_mi_models <- 4
 ## fit all constrained models for all grouping variables:
-res_mi_ml <- models_cfa %>% {
-  bind_cols(
-    ## get model names from list, repeated for the number of results from fit_groups:
-    model = rep(names(.), each = length(groups_cfa) * n_mi_models),
-    ## get results data:
-    purrr::map_dfr(
-      ., ~ fit_groups(.x, data = dat_fa, group_cfa = group_cfa)
-    )
+res_mi_ml <- NULL
+for (i in seq_along(models_cfa)) {
+  ## estimate constrained models for determining measurement invariance for a specific factor structure:
+  res_this <- purrr::map_dfr(
+    models_cfa[[i]], ~ fit_groups(.x, data = dat_fa, group_cfa = group_cfa)
+  )
+  ## add name of model to results data:
+  res_this <- tibble(model = names(models_cfa)[i], res_this)
+  ## store results:
+  res_mi_ml <- bind_rows(
+    res_mi_ml,
+    res_this
   )
 }
 res_mi_ml %>% print(n = 50)
@@ -199,7 +226,7 @@ dat_plot <- res_mi_ml %>%
   mutate(
     invariance_level = paste0(lag(constraint), "\nto ", constraint)
   ) %>% 
-  filter(constraint != "configurational")
+  filter(constraint %in% c("metric", "scalar", "strict"))
 
 ## plot delta CFI:
 plot_mi_ml <- dat_plot %>%
@@ -213,6 +240,7 @@ plot_mi_ml <- dat_plot %>%
              group = group)) + 
   geom_bar(position="dodge", stat="identity", width = .4) +
   geom_hline(yintercept = -0.01, linetype = "dashed", color = "darkgrey", alpha = .8) + 
+  geom_hline(yintercept = -0.002, linetype = "dashed", color = "darkgrey", alpha = .8) + 
   scale_fill_discrete(
     name = "Grouping Variable",
     breaks = c("t1_alter_grp2", "t1_datum_grp2", "t1_geschlecht", "tumorart"),
