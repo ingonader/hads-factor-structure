@@ -21,7 +21,7 @@ source(file.path(path_r, "02-data-prep.R"))
 
 library(nFactors)
 library(psych)
-
+library(polycor)
 
 ## ========================================================================= ##
 ## exploratory factor analysis
@@ -41,8 +41,9 @@ assertthat::are_equal(
   dim(na.omit(dat_efa))
 )
 
-## calculate correlation matrix:
-cormat_efa <- cor(dat_efa)
+## calculate correlation matrix of polychoric correlations:
+cormat_efa_hc <- hetcor(dat_efa, ML = TRUE)
+cormat_efa <- cormat_efa_hc[["correlations"]]
 
 ## calculate eigenvalues (and eigenvectors):
 ev <- eigen(cormat_efa)
@@ -68,7 +69,8 @@ plotnScree(nS)
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
 
 ## orthogonal factors:
-fit_efa_ortho <- fa(dat_efa, nfactors = 2, rotate = "varimax", fm = "ml")
+fit_efa_ortho <- fa(r = cormat_efa, nfactors = 2, n.obs = nrow(dat_efa),
+                    rotate = "varimax", fm = "ml")
 fit_efa_ortho
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
@@ -76,7 +78,8 @@ fit_efa_ortho
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
 
 ## correlated factors:
-fit_efa_rot <- fa(dat_efa, nfactors = 2, rotate = "oblimin", fm = "ml")
+fit_efa_rot <- fa(r = cormat_efa, nfactors = 2, n.obs = nrow(dat_efa),
+                  rotate = "oblimin", fm = "ml")
 fit_efa_rot
 
 
