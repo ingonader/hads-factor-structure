@@ -7,6 +7,9 @@ data/*
 ## plots:
 plot/*
 
+## temporary folder:
+tmp/*
+
 ## old code snippets:
 R/_old/*
 
