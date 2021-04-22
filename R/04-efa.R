@@ -47,7 +47,7 @@ cormat_efa <- cormat_efa_hc[["correlations"]]
 
 ## calculate eigenvalues (and eigenvectors):
 ev <- eigen(cormat_efa)
-ev$values
+#ev$values
 
 ## data for scree plot with ggplot:
 dat_plot_scree <- data.frame(
@@ -57,7 +57,11 @@ dat_plot_scree <- data.frame(
 
 ## scree plot:
 dat_plot_scree %>%
-  ggplot(aes(x = n, y = eigenvalue)) + geom_line() + geom_point()
+  ggplot(aes(x = n, y = eigenvalue)) + 
+  geom_line() + 
+  geom_point() +
+  scale_x_continuous(breaks = seq(from = 0, to = max(dat_plot_scree$n, na.rm = TRUE), by = 1)) +
+  scale_y_continuous(breaks = seq(from = 0, to = max(dat_plot_scree$eigenvalue, na.rm = TRUE), by = 1))
 
 ## scree plot with parallel analysis:
 ap <- parallel(subject = nrow(dat_efa), var = ncol(dat_efa), rep = 100, cent=0.05)
@@ -70,8 +74,8 @@ plotnScree(nS)
 
 ## orthogonal factors:
 fit_efa_ortho <- fa(r = cormat_efa, nfactors = 2, n.obs = nrow(dat_efa),
-                    rotate = "varimax", fm = "ml")
-fit_efa_ortho
+                    rotate = "varimax", fm = "wls")
+#fit_efa_ortho
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
 ## EFA: solution with correlated factors
@@ -79,8 +83,8 @@ fit_efa_ortho
 
 ## correlated factors:
 fit_efa_rot <- fa(r = cormat_efa, nfactors = 2, n.obs = nrow(dat_efa),
-                  rotate = "oblimin", fm = "ml")
-fit_efa_rot
+                  rotate = "oblimin", fm = "wls")
+#fit_efa_rot
 
 
 
