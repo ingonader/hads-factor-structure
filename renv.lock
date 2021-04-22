@@ -814,6 +814,13 @@
       "Repository": "CRAN",
       "Hash": "ec0e5ab4e5f851f6ef32cd1d1984957f"
     },
+    "polycor": {
+      "Package": "polycor",
+      "Version": "0.7-10",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "6207104d51b52f6baa20e0bd32dfbd8c"
+    },
     "prabclus": {
       "Package": "prabclus",
       "Version": "2.3-2",
