@@ -123,3 +123,27 @@ get_fit_indices <- function(model_def, data, group = NULL, std.lv = TRUE, ...) {
 }
 
 
+#' Create filename with current time and commit hash
+#'
+#' @param path Path of file, character.
+#' @param filename_stem Filename without extension, of type
+#'   character.
+#' @param filename_ext Extension of file (without ".") of
+#'   type character.
+#'
+#' @return full filename with path and additional infos
+#' @export
+#'
+#' @examples
+#' construct_filename(".", "x", "png")
+construct_filename <- function(path = ".", filename_stem, filename_ext) {
+  commit <- git2r::revparse_single(git2r::repository(path),"HEAD")
+  commit_sha <- substr(commit$sha, 1, 8)
+  current_time <- Sys.time() %>% as.character() %>%
+    stringr::str_replace_all(" ", "--") %>%
+    stringr::str_replace_all(":", "-")
+  filename <- paste0(filename_stem, "_", current_time, "---", commit_sha, ".", filename_ext)
+  filename <- file.path(path, filename)
+  return(filename)
+}
+

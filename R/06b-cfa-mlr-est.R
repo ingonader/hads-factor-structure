@@ -25,13 +25,13 @@ library(lavaan)
 ## confirmatory factor analysis
 ## ========================================================================= ##
 
-## estimate one model of the list above:
-wch_model <- "dunbar_3f_cor"  ## covariance matrix is not positive definite (due to sampling error), but model estimation runs fine
-wch_model <- 1  ## covariance matrix is not positive definite (due to sampling error), but model estimation runs fine
-fit_cfa <- cfa(models_cfa[[wch_model]], data = dat_fa, estimator = "MLR")
-fit_cfa_summary <- summary(fit_cfa, standardized = TRUE, fit.measures = TRUE)
-fit_cfa_summary$FIT
-bind_rows(fit_cfa_summary$FIT)
+# ## estimate one model of the list above:
+# wch_model <- "dunbar_3f_cor"  ## covariance matrix is not positive definite (due to sampling error), but model estimation runs fine
+# wch_model <- 1  ## covariance matrix is not positive definite (due to sampling error), but model estimation runs fine
+# fit_cfa <- cfa(models_cfa[[wch_model]], data = dat_fa, estimator = "MLR")
+# fit_cfa_summary <- summary(fit_cfa, standardized = TRUE, fit.measures = TRUE)
+# fit_cfa_summary$FIT
+# bind_rows(fit_cfa_summary$FIT)
 
 ## get fit indices of all models:
 res_cfa_mlr <- models_cfa %>% {
@@ -40,8 +40,8 @@ res_cfa_mlr <- models_cfa %>% {
     purrr::map_dfr(., get_fit_indices, dat_fa, estimator = "MLR")
     )
 }
-res_cfa_mlr %>% select(model, npar, cfi, cfi.scaled, cfi.robust, rmsea, rmsea.scaled, rmsea.robust, status, status_msg)
-res_cfa_mlr %>% select(model, npar, cfi.robust, rmsea.robust, status)
+# res_cfa_mlr %>% select(model, npar, cfi, cfi.scaled, cfi.robust, rmsea, rmsea.scaled, rmsea.robust, status, status_msg)
+# res_cfa_mlr %>% select(model, npar, cfi.robust, rmsea.robust, status)
 
 #' robust RMSEA and CFI values are computed following 
 #' Brosseau-Liard, P. E., Savalei, V., and Li, L. (2012), and 
@@ -50,8 +50,8 @@ res_cfa_mlr %>% select(model, npar, cfi.robust, rmsea.robust, status)
 #' (while the 'old' ones are called cfi.scaled and rmsea.scaled)
 #' -- Yves Rosseel, Sept 2016
 
-## check warnings:
-res_cfa_mlr %>% filter(status != "success") %>% pull(status_msg) %>% cat()
+# ## check warnings:
+# res_cfa_mlr %>% filter(status != "success") %>% pull(status_msg) %>% cat()
 
 
 ## ========================================================================= ##
@@ -210,14 +210,14 @@ for (i in seq_along(models_cfa)) {
     res_this
   )
 }
-res_mi_mlr %>% print(n = 50)
+# res_mi_mlr %>% print(n = 50)
 
-## check warnings:
-res_mi_mlr %>% filter(status != "success") %>% 
-  group_by(status, model, group) %>% 
-  count() %>% 
-  select(n, everything())
-res_mi_mlr %>% filter(status != "success") %>% pull(status_msg) %>% unique() %>% cat()
+# ## check warnings:
+# res_mi_mlr %>% filter(status != "success") %>% 
+#   group_by(status, model, group) %>% 
+#   count() %>% 
+#   select(n, everything())
+# res_mi_mlr %>% filter(status != "success") %>% pull(status_msg) %>% unique() %>% cat()
 
 ## ------------------------------------------------------------------------- ##
 ## stacked bar plot of delta-CFIs

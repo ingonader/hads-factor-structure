@@ -36,11 +36,11 @@ res_cfa_ml <- models_cfa %>% {
     purrr::map_dfr(., get_fit_indices, dat_fa)
     )
 }
-res_cfa_ml %>% select(model, npar, cfi, aic, bic, rmsea, status, status_msg)
-res_cfa_ml %>% select(model, npar, cfi, rmsea, status)
-
-## check warnings:
-res_cfa_ml %>% filter(status != "success") %>% pull(status_msg) %>% cat()
+# res_cfa_ml %>% select(model, npar, cfi, aic, bic, rmsea, status, status_msg)
+# res_cfa_ml %>% select(model, npar, cfi, rmsea, status)
+# 
+# ## check warnings:
+# res_cfa_ml %>% filter(status != "success") %>% pull(status_msg) %>% cat()
 
 
 ## ========================================================================= ##
@@ -208,14 +208,14 @@ for (i in seq_along(models_cfa)) {
     res_this
   )
 }
-res_mi_ml %>% print(n = 50)
+# res_mi_ml %>% print(n = 50)
 
-## check warnings:
-res_mi_ml %>% filter(status != "success") %>% 
-  group_by(status, model, group) %>% 
-  count() %>% 
-  select(n, everything())
-res_mi_ml %>% filter(status != "success") %>% pull(status_msg) %>% unique() %>% cat()
+# ## check warnings:
+# res_mi_ml %>% filter(status != "success") %>% 
+#   group_by(status, model, group) %>% 
+#   count() %>% 
+#   select(n, everything())
+# res_mi_ml %>% filter(status != "success") %>% pull(status_msg) %>% unique() %>% cat()
 
 ## ------------------------------------------------------------------------- ##
 ## stacked bar plot of delta-CFIs

@@ -30,15 +30,15 @@ library(lavaan)
 ## confirmatory factor analysis
 ## ========================================================================= ##
 
-## estimate one model of the list above:
-wch_model <- "dunbar_3f_cor"  ## covariance matrix is not positive definite (due to sampling error), but model estimation runs fine
-fit_cfa <- cfa(models_cfa[[wch_model]], data = dat_fa, estimator = "WLSMV", ordered = TRUE)
-fit_cfa_summary <- summary(fit_cfa, standardized = TRUE, fit.measures = TRUE)
-fit_cfa_summary$FIT
-bind_rows(fit_cfa_summary$FIT)
-
-cfa(models_cfa[[wch_model]], data = dat_fa, estimator = "WLSMV", ordered = TRUE, group = "t1_geschlecht", group.equal = c("loadings")) #%>% summary()
-cfa(models_cfa[[wch_model]], data = dat_fa, estimator = "WLSMV", ordered = TRUE, group = "t1_geschlecht", group.equal = c("loadings", "thresholds")) #%>% summary()
+# ## estimate one model of the list above:
+# wch_model <- "dunbar_3f_cor"  ## covariance matrix is not positive definite (due to sampling error), but model estimation runs fine
+# fit_cfa <- cfa(models_cfa[[wch_model]], data = dat_fa, estimator = "WLSMV", ordered = TRUE)
+# fit_cfa_summary <- summary(fit_cfa, standardized = TRUE, fit.measures = TRUE)
+# fit_cfa_summary$FIT
+# bind_rows(fit_cfa_summary$FIT)
+# 
+# cfa(models_cfa[[wch_model]], data = dat_fa, estimator = "WLSMV", ordered = TRUE, group = "t1_geschlecht", group.equal = c("loadings")) #%>% summary()
+# cfa(models_cfa[[wch_model]], data = dat_fa, estimator = "WLSMV", ordered = TRUE, group = "t1_geschlecht", group.equal = c("loadings", "thresholds")) #%>% summary()
 
 #' relevant indicators:
 #' * chisq.scaled
@@ -54,11 +54,11 @@ res_cfa_ordinal <- models_cfa %>% {
     purrr::map_dfr(., get_fit_indices, dat_fa, estimator = "WLSMV", ordered = TRUE)
     )
 }
-res_cfa_ordinal %>% select(model, npar, cfi, cfi.scaled, rmsea, rmsea.scaled, srmr, status, status_msg)
-res_cfa_ordinal %>% select(model, npar, cfi.scaled, rmsea.scaled, status)
+# res_cfa_ordinal %>% select(model, npar, cfi, cfi.scaled, rmsea, rmsea.scaled, srmr, status, status_msg)
+# res_cfa_ordinal %>% select(model, npar, cfi.scaled, rmsea.scaled, status)
 
-## check warnings:
-res_cfa_ordinal %>% filter(status != "success") %>% pull(status_msg) %>% cat()
+# ## check warnings:
+# res_cfa_ordinal %>% filter(status != "success") %>% pull(status_msg) %>% cat()
 
 ## ========================================================================= ##
 ## measurement invariance
@@ -238,14 +238,14 @@ for (i in seq_along(models_cfa)) {
     res_this
   )
 }
-res_mi_ordinal %>% print(n = 50)
+# res_mi_ordinal %>% print(n = 50)
 
-## check warnings:
-res_mi_ordinal %>% filter(status != "success") %>% 
-  group_by(status, model, group) %>% 
-  count() %>% 
-  select(n, everything())
-res_mi_ordinal %>% filter(status != "success") %>% pull(status_msg) %>% unique() %>% cat()
+# ## check warnings:
+# res_mi_ordinal %>% filter(status != "success") %>% 
+#   group_by(status, model, group) %>% 
+#   count() %>% 
+#   select(n, everything())
+# res_mi_ordinal %>% filter(status != "success") %>% pull(status_msg) %>% unique() %>% cat()
 
 ## remove p value for configurational invariance and add chisq per df (reduced chi squared statistic):
 res_mi_ordinal <- res_mi_ordinal %>%
@@ -256,9 +256,9 @@ res_mi_ordinal <- res_mi_ordinal %>%
     chisq_scaled_diff_per_df = chisq_scaled_diff / df_scaled_diff
   )
 
-res_mi_ordinal %>% 
-  select(model, group, grps_n, constraint, anova_chisq, anova_df, anova_chisq_per_df, anova_p) %>% 
-  print(n = 200)
+# res_mi_ordinal %>% 
+#   select(model, group, grps_n, constraint, anova_chisq, anova_df, anova_chisq_per_df, anova_p) %>% 
+#   print(n = 200)
 
 
 ## ------------------------------------------------------------------------- ##
