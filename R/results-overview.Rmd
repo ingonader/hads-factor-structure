@@ -1,0 +1,91 @@
+---
+title: "Results Overview"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(magrittr)
+library(dplyr)
+library(knitr)
+load("../tmp/results-all_2021-04-26--20-24-12---f25fcea3.Rdata")
+```
+
+
+# CFA
+
+## MLR Estimation
+
+```{r, results='asis'}
+res_cfa_mlr %>% 
+  select(model, npar, cfi.robust, rmsea.robust, status) %>%
+  mutate_at(c("cfi.robust", "rmsea.robust"), ~ round(.x, 3)) %>%
+  kable()
+```
+
+## WLSMV Estimation
+
+```{r}
+res_cfa_ordinal %>% select(model, npar, cfi.scaled, rmsea.scaled, status) %>%
+  mutate_at(c("cfi.scaled", "rmsea.scaled"), ~ round(.x, 3)) %>%
+  kable()
+```
+
+## Warnings
+
+```{r}
+res_cfa_mlr %>% filter(status != "success") %>% pull(status_msg) %>% cat()
+```
+
+
+```{r}
+res_cfa_ordinal %>% filter(status != "success") %>% pull(status_msg) %>% cat()
+```
+
+
+# Measurement Invariance
+
+## MLR Estimation
+
+```{r}
+res_mi_mlr %>% 
+  select(model, group, grps, grps_n, constraint, npar, contains("cfi")) %>%
+  mutate(across(contains("cfi"), ~ round(.x, 3))) %>%
+  kable()
+```
+
+## WLSMV Estimation
+
+```{r}
+res_mi_ordinal %>% 
+  select(model, group, grps, grps_n, constraint, npar, anova_chisq, anova_df, anova_chisq_per_df, anova_p) %>%
+  mutate(across(c(anova_chisq, anova_chisq_per_df, anova_p), ~ round(.x, 3))) %>%
+  kable()
+```
+
+## Warnings
+
+```{r}
+res_mi_mlr %>% filter(status != "success") %>%
+  group_by(status, model, group) %>%
+  count() %>%
+  select(n, everything()) %>%
+  kable()
+```
+
+```{r}
+res_mi_mlr %>% filter(status != "success") %>% pull(status_msg) %>% unique() %>% cat()
+```
+
+
+```{r}
+res_mi_ordinal %>% filter(status != "success") %>%
+  group_by(status, model, group) %>%
+  count() %>%
+  select(n, everything()) %>%
+  kable()
+```
+
+```{r}
+res_mi_ordinal %>% filter(status != "success") %>% pull(status_msg) %>% unique() %>% cat()
+```

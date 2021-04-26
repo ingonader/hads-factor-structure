@@ -7,6 +7,9 @@ data/*
 ## plots:
 plot/*
 
+## html output:
+R/results-overview.html
+
 ## temporary folder:
 tmp/*
 

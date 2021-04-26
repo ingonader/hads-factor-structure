@@ -213,9 +213,9 @@ for (i in seq_along(models_cfa)) {
 # res_mi_mlr %>% print(n = 50)
 
 # ## check warnings:
-# res_mi_mlr %>% filter(status != "success") %>% 
-#   group_by(status, model, group) %>% 
-#   count() %>% 
+# res_mi_mlr %>% filter(status != "success") %>%
+#   group_by(status, model, group) %>%
+#   count() %>%
 #   select(n, everything())
 # res_mi_mlr %>% filter(status != "success") %>% pull(status_msg) %>% unique() %>% cat()
 
