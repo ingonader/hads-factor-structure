@@ -122,5 +122,7 @@ res_mi_ordinal %>% filter(status != "success") %>%
 ```
 
 ```{r}
-res_mi_ordinal %>% filter(status != "success") %>% pull(status_msg) %>% unique() %>% cat()
+res_mi_ordinal %>% filter(status != "success") %>% pull(status_msg) %>% 
+  stringr::str_replace_all("= [0-9.e-]+", "") %>% unique() %>% cat()
+
 ```
