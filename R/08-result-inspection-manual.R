@@ -110,14 +110,6 @@ res_cfa_mlr$fit[[wch_model]] %>%
 ## Measurement Invariance
 ## ========================================================================= ##
 
-lapplyiflist <- function(x, f) {
-  ## if x is list, then "lapply" f:
-  if (is.list(x)) 
-    return(lapply(x, f))
-  ## if not, just apply f on x:
-  return(f(x))
-}
-
 ## warning messages:
 res_mi_mlr %>% filter(status != "success") %>% pull(status_msg) %>% unique() %>% cat()
 res_mi_ordinal %>% filter(status != "success") %>% pull(status_msg) %>% 

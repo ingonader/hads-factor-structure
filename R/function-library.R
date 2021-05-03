@@ -147,3 +147,29 @@ construct_filename <- function(path = ".", filename_stem, filename_ext) {
   return(filename)
 }
 
+
+
+#' Apply a function directly or via lapply
+#' 
+#' Runs a function \code{f()} on an object \code{x}. If \code{x} is 
+#' of type \code{list}, then the funciton is applied to each element 
+#' of the list via \code{lapply()}.
+#'
+#' @param x An object of any type that \code{f()} will be applied on. If 
+#'   \code{x} is of type \code{list}, then \code{f()} will be applied
+#'   via \code{lapply()}, otherwise directly.
+#' @param f A function to apply on \code{x} or its elements.
+#'
+#' @return The result of \code{f(x)}, or a list of results resulting
+#'   from \code{lapply(x, f)}.
+#' @export
+#'
+#' @examples
+lapplyiflist <- function(x, f) {
+  ## if x is list, then "lapply" f:
+  if (is.list(x)) 
+    return(lapply(x, f))
+  ## if not, just apply f on x:
+  return(f(x))
+}
+
