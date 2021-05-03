@@ -152,7 +152,7 @@ construct_filename <- function(path = ".", filename_stem, filename_ext) {
 #' Apply a function directly or via lapply
 #' 
 #' Runs a function \code{f()} on an object \code{x}. If \code{x} is 
-#' of type \code{list}, then the funciton is applied to each element 
+#' of type \code{list}, then the function is applied to each element 
 #' of the list via \code{lapply()}.
 #'
 #' @param x An object of any type that \code{f()} will be applied on. If 
