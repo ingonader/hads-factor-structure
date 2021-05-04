@@ -173,3 +173,27 @@ lapplyiflist <- function(x, f) {
   return(f(x))
 }
 
+
+#' Apply a function to x or to first element of x (if x is a list)
+#' 
+#' Runs a function \code{f()} on an object \code{x}. If \code{x} is 
+#' of type \code{list}, then the function is applied to the first
+#' element of the list.
+#'
+#' @param x An object of any type that \code{f()} will be applied on. If 
+#'   \code{x} is of type \code{list}, then \code{f()} will be applied
+#'   to first element of \code{x}, otherwise directly to \code{x}.
+#' @param f A function to apply on \code{x} or its first element.
+#'
+#' @return The result of \code{f(x)}, or \code{f(x[[1]])}
+#' @export
+#'
+#' @examples
+firstiflist <- function(x, f) {
+  ## if x is list, then apply function f to first element of list:
+  if (is.list(x)) 
+    return(f(x[[1]]))
+  ## if not, just apply f on x:
+  return(f(x))
+  
+}

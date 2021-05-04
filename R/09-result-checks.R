@@ -25,45 +25,96 @@ library(lavaan)
 ## load data dump from disk
 ## ========================================================================= ##
 
-load(file = file.path(path_tmp, "results-all_2021-04-26--20-24-12---f25fcea3.Rdata"))
+# load(file = file.path(path_tmp, "results-all_2021-04-26--20-24-12---f25fcea3.Rdata"))
 
 ## ========================================================================= ##
 ## CFA models
 ## ========================================================================= ##
 
+# fit1 <- res_cfa_mlr$fit[[7]]
+# fit <- res_cfa_mlr$fit[[2]]
+# fit2 <- res_mi_mlr$fit[[3]]
 get_loadings_summary <- function(fit) {
-  loadings_with_zero <- fit %>% inspect(what = "std") %>% .$lambda
-  loadings_range <- loadings_with_zero[loadings_with_zero != 0] %>% range(na.rm = TRUE)
+  ## get list of loadings, theta, psi (or list of lists):
+  loadings_and_stuff <- fit %>% inspect(what = "std") 
+  
+  ## check if result is from CFA (depth 2) or MGCFA (depth 3):
+  if (purrr::vec_depth(loadings_and_stuff) == 2) {
+    loadings_with_zero <- loadings_and_stuff$lambda
+  }
+  else {
+    loadings_with_zero <- loadings_and_stuff %>% 
+      lapply(., function(i) i$lambda)    
+  }
+  ## get rid of zero loadings in this matrix / list of matrices:
+  loadings_range <- lapplyiflist(loadings_with_zero, function(x) x[x != 0]) %>% 
+    range(na.rm = TRUE)
+  ## return range of loadings (or range of list of loadings):
   return(loadings_range)
 }
+# get_loadings_summary(fit1)
+# get_loadings_summary(fit2)
 
-#fit <- res_cfa_mlr$fit[[7]]
-#fit <- res_cfa_mlr$fit[[2]]
-fit <- res_mi_mlr$fit[[3]]
 get_factor_var_summary <- function(fit) {
-  fact_var <- fit %>% inspect(what = "cov.lv") %>% diag()
+  ## get factor variances (in covariance matrix diagonal), 
+  ## for one group of (list of) multiple groups (via lapply):
+  fact_var <- fit %>% inspect(what = "cov.lv") %>% lapplyiflist(., diag)
+  ## extract range (of vector or list):
   return(range(fact_var))
 }
+get_factor_var_summary(fit1)
+get_factor_var_summary(fit2)
 
 get_factor_covar_summary <- function(fit) {
+  ## get factor variance-covariance matrix (or list, if MGCFA):
   fact_covar <- fit %>% inspect(what = "cov.lv")
   ## check if only one factor:
-  if (nrow(fact_covar) == 1)
+  if (firstiflist(fact_covar, nrow) == 1)
     return(NA)
-  ## else, return lower triangle range:
-  return(range(fact_covar[lower.tri(fact_covar)], na.rm = TRUE))
+  ## else, extract lower triangle:
+  lowtri <- lapplyiflist(fact_covar, 
+                         function(x) x[lower.tri(x)])
+  ## and return range of (list of) lower triangles:
+  return(range(lowtri, na.rm = TRUE))
 }
-#get_factor_covar_summary(fit)
+get_factor_covar_summary(fit1)
+get_factor_covar_summary(fit2)
 
 get_error_var_summary <- function(fit) {
-  fit %>% parameterEstimates() %>% filter(lhs == rhs) %>%
+  ## get all parameter estimates:
+  fit %>% parameterEstimates() %>% 
+    ## keep only error variances (of items) and variances of factors:
+    filter(lhs == rhs) %>%
+    ## remove factor estimates:
     filter(!grepl("f[0-9]+", lhs)) %>%
+    ## return range:
     {range(.$est, na.rm = TRUE)}
 }
+get_error_var_summary(fit1)
+get_error_var_summary(fit2)
 
+# fit <- res_cfa_mlr$fit[[7]]
+# fit <- res_cfa_mlr$fit[[2]]
+# fit <- res_mi_mlr$fit[[3]]
 get_cor_resid_summary <- function(fit) {
-  fit %>% resid(type = "cor") %>% .$cov %>% range(na.rm = TRUE)
+  ## get correlation residuals (list, or list of lists):
+  cor_resid_summary <- fit %>% resid(type = "cor") 
+  
+  ## check if result is from CFA (depth 2) or MGCFA (depth 3):
+  if (purrr::vec_depth(cor_resid_summary) == 2) {
+    ## get covariances:
+    cor_resid_cov <- cor_resid_summary$cov
+  }
+  else {
+    ## get covariances from list of summaries:
+    cor_resid_cov <- lapplyiflist(cor_resid_summary, 
+                                  function(i) i$cov) 
+  }
+  ## and return range (of list or single cov matrix):
+  return(range(cor_resid_cov, na.rm = TRUE))
 }
+get_cor_resid_summary(fit1)
+get_cor_resid_summary(fit2)
 
 extend_cfa_parameter_summary <- function(res_cfa) {
   res_cfa %>% mutate(
@@ -94,7 +145,14 @@ res_cfa_ordinal_ext %>% select(model, npar, cfi.scaled, rmsea.scaled, status,
                            contains("load_"), contains("fact_"),
                            contains("error_"), contains("cor_resid_"))
 
-## TODO:
-## extend MGCFA (MI) models
+## extend MGCFA (MI) models for MLR estimation:
+res_mi_mlr_ext <- res_mi_mlr %>%
+  extend_cfa_parameter_summary()
+res_mi_mlr_ext %>% select(1:5, status, 
+                          contains("load_"), contains("fact_"),
+                          contains("error_"), contains("cor_resid_"))
+
+
+save.image(file = file.path(path_tmp, "results-all_2021-05-04--21-03-00---f25fcea3---extended.Rdata"))
 
 
