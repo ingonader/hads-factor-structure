@@ -10,6 +10,50 @@ library(dplyr)
 library(knitr)
 library(kableExtra)
 load("../tmp/results-all_2021-05-04--21-03-00---f25fcea3---extended.Rdata")
+
+
+add_column_spec <- function(kable_styled_df) {
+  kable_styled_df %>%
+  column_spec(which(names(wch_res) == "load_min"),
+              bold = coalesce(wch_res[["load_min"]] < 0.3, FALSE),
+              color = if_else(wch_res[["load_min"]] < 0.3, "black", "gray",
+                              missing = "black")) %>%
+  column_spec(which(names(wch_res) == "load_max"),
+              bold = coalesce(wch_res[["load_max"]] > 1.0, FALSE),
+              color = if_else(wch_res[["load_max"]] > 1.0, "black", "gray",
+                                    missing = "black"))  %>%
+  column_spec(which(names(wch_res) == "fact_var_max"),
+              bold = coalesce(wch_res[["fact_var_max"]] > 1.0, FALSE),
+             color = if_else(wch_res[["fact_var_max"]] > 1.0, "black", "gray",
+                             missing = "black")) %>%
+  column_spec(which(names(wch_res) == "fact_covar_min"),
+              bold = coalesce(wch_res[["fact_covar_min"]] > 1.0, FALSE),
+              color = if_else(wch_res[["fact_covar_min"]] > 1.0, "black", "gray",
+                              missing = "black")) %>%
+  column_spec(which(names(wch_res) == "fact_covar_max"),
+              bold = coalesce(wch_res[["fact_covar_max"]] > 1.0, FALSE),
+              color = if_else(wch_res[["fact_covar_max"]] > 1.0, "black", "gray",
+                              missing = "black")) %>%
+  column_spec(which(names(wch_res) == "error_var_min"),
+              bold = coalesce(wch_res[["error_var_min"]] < 0.0, FALSE),
+              color = if_else(wch_res[["error_var_min"]] < 0.0, "black", "gray",
+                              missing = "black")) %>%
+  column_spec(which(names(wch_res) == "cor_resid_min"),
+              bold = coalesce(wch_res[["cor_resid_min"]] < -0.1, FALSE),
+              color = if_else(wch_res[["cor_resid_min"]] < -0.1, "black", "gray",
+                              missing = "black")) %>%
+  column_spec(which(names(wch_res) == "cor_resid_max"),
+              bold = coalesce(wch_res[["cor_resid_max"]] > 0.1, FALSE),
+              color = if_else(wch_res[["cor_resid_max"]] > 0.1, "black", "gray",
+                              missing = "black")) %>%
+  column_spec(which(names(wch_res) == "cor_resid_max"),
+              background = if_else(wch_res[["error_var_min"]] < 0.0, "#DDDDDD", "white",
+                              missing = "black")) %>%
+  column_spec(which(names(wch_res) == "cor_resid_max"),
+              background = if_else(wch_res[["cor_resid_max"]] > 0.3, "#DDDDDD", "white",
+                              missing = "black"))
+}
+
 ```
 
 
@@ -22,34 +66,44 @@ wch_res <- res_cfa_mlr_ext %>%
   select(model, npar, cfi.robust, rmsea.robust, status, 
          contains("load_"), contains("fact_"),
          contains("error_"), contains("cor_resid_"))
+
+# x <- wch_res$fact_covar_min
+# x_min <- NA; x_max <- NA
+get_color <- function(x, low = "white", high = "orange", 
+                      x_min = NA, x_max = NA, ncols = 100) {
+  if (is.na(x_min)) x_min <- min(x, na.rm = TRUE)
+  if (is.na(x_max)) x_max <- max(x, na.rm = TRUE)
+  xmod <- floor((x - x_min) / (x_max - x_min) * (ncols-1)) + 1
+  xmod[x < x_min] <- 1
+  xmod[x > x_max] <- ncols
+  xmod[is.na(xmod)] <- 1
+  cols <- scales::seq_gradient_pal(low = low, high = high)((1:ncols)/ncols)
+  return(cols[xmod])
+}
+
+# usage:
+# mutate(
+#   npar = cell_spec(npar, background = get_color(npar))
+# ) %>%
+
+
 wch_res %>%
   mutate_at(c(3:4, 6:15), ~ round(.x, 3)) %>%
-  kable() %>%
-  kable_styling() %>%
-  column_spec(which(names(wch_res) == "load_min"), 
-              color = if_else(wch_res[["load_min"]] < 0.4, "red", "black",
-                              missing = "black")) %>%
-  column_spec(which(names(wch_res) == "load_max"), 
-                    color = if_else(wch_res[["load_max"]] > 1.0, "red", "black",
-                                    missing = "black"))  %>%
-  column_spec(which(names(wch_res) == "fact_var_max"), 
-             color = if_else(wch_res[["fact_var_max"]] > 1.0, "red", "black",
-                             missing = "black")) %>%
-  column_spec(which(names(wch_res) == "fact_covar_max"),
-              color = if_else(wch_res[["fact_covar_max"]] > 1.0, "red", "black", 
-                              missing = "black")) %>%
-  column_spec(which(names(wch_res) == "error_var_min"),
-              color = if_else(wch_res[["error_var_min"]] < 0.0, "red", "black",
-                              missing = "black")) %>%
-  column_spec(which(names(wch_res) == "cor_resid_min"),
-              color = if_else(wch_res[["cor_resid_min"]] < -0.1, "red", "black",
-                              missing = "black")) %>%
-  column_spec(which(names(wch_res) == "cor_resid_max"),
-              color = if_else(wch_res[["cor_resid_max"]] > 0.1, "red", "black",
-                              missing = "black")) %>%
-  column_spec(which(names(wch_res) == "cor_resid_max"),
-              background = if_else(wch_res[["cor_resid_max"]] > 0.3, "yellow", "white",
-                              missing = "black"))
+  mutate(
+    load_max = cell_spec(load_max,
+                         background = get_color(load_max, x_min = 1.0)),
+    fact_var_max = cell_spec(fact_var_max,
+                         background = get_color(fact_var_max, x_min = 1.0)),
+    fact_covar_min = cell_spec(fact_covar_min,
+                         background = get_color(fact_covar_min, x_min = 1.0)),
+    fact_covar_max = cell_spec(fact_covar_max,
+                         background = get_color(fact_covar_max, x_min = 1.0)),
+    cor_resid_max = cell_spec(cor_resid_max, 
+                              background = get_color(cor_resid_max, x_min = .1))
+  ) %>%
+  kable(escape = FALSE, booktabs = TRUE) %>%
+  kable_styling()  %>%
+  add_column_spec()
 
 
 ```
@@ -65,30 +119,7 @@ wch_res %>%
   mutate_at(c(3:4, 6:15), ~ round(.x, 3)) %>%
   kable() %>%
   kable_styling() %>%
-  column_spec(which(names(wch_res) == "load_min"), 
-              color = if_else(wch_res[["load_min"]] < 0.4, "red", "black",
-                              missing = "black")) %>%
-  column_spec(which(names(wch_res) == "load_max"), 
-                    color = if_else(wch_res[["load_max"]] > 1.0, "red", "black",
-                                    missing = "black"))  %>%
-  column_spec(which(names(wch_res) == "fact_var_max"), 
-             color = if_else(wch_res[["fact_var_max"]] > 1.0, "red", "black",
-                             missing = "black")) %>%
-  column_spec(which(names(wch_res) == "fact_covar_max"),
-              color = if_else(wch_res[["fact_covar_max"]] > 1.0, "red", "black", 
-                              missing = "black")) %>%
-  column_spec(which(names(wch_res) == "error_var_min"),
-              color = if_else(wch_res[["error_var_min"]] < 0.0, "red", "black",
-                              missing = "black")) %>%
-  column_spec(which(names(wch_res) == "cor_resid_min"),
-              color = if_else(wch_res[["cor_resid_min"]] < -0.1, "red", "black",
-                              missing = "black")) %>%
-  column_spec(which(names(wch_res) == "cor_resid_max"),
-              color = if_else(wch_res[["cor_resid_max"]] > 0.1, "red", "black",
-                              missing = "black")) %>%
-  column_spec(which(names(wch_res) == "cor_resid_max"),
-              background = if_else(wch_res[["cor_resid_max"]] > 0.3, "yellow", "white",
-                              missing = "black"))
+  add_column_spec()
 
 ```
 
@@ -107,30 +138,9 @@ wch_res %>%
   mutate_at(c(7:16), ~ round(.x, 3)) %>%
   kable() %>%
   kable_styling() %>%
-  column_spec(which(names(wch_res) == "load_min"), 
-              color = if_else(wch_res[["load_min"]] < 0.4, "red", "black",
-                              missing = "black")) %>%
-  column_spec(which(names(wch_res) == "load_max"), 
-                    color = if_else(wch_res[["load_max"]] > 1.0, "red", "black",
-                                    missing = "black"))  %>%
-  column_spec(which(names(wch_res) == "fact_var_max"), 
-             color = if_else(wch_res[["fact_var_max"]] > 1.0, "red", "black",
-                             missing = "black")) %>%
-  column_spec(which(names(wch_res) == "fact_covar_max"),
-              color = if_else(wch_res[["fact_covar_max"]] > 1.0, "red", "black", 
-                              missing = "black")) %>%
-  column_spec(which(names(wch_res) == "error_var_min"),
-              color = if_else(wch_res[["error_var_min"]] < 0.0, "red", "black",
-                              missing = "black")) %>%
-  column_spec(which(names(wch_res) == "cor_resid_min"),
-              color = if_else(wch_res[["cor_resid_min"]] < -0.1, "red", "black",
-                              missing = "black")) %>%
-  column_spec(which(names(wch_res) == "cor_resid_max"),
-              color = if_else(wch_res[["cor_resid_max"]] > 0.1, "red", "black",
-                              missing = "black")) %>%
-  column_spec(which(names(wch_res) == "cor_resid_max"),
-              background = if_else(wch_res[["cor_resid_max"]] > 0.3, "yellow", "white",
-                              missing = "black"))
+  add_column_spec() %>%
+  scroll_box(width = NULL, height = "800px", fixed_thead = T)
+
 
 
 ```
