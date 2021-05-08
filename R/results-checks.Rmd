@@ -138,6 +138,20 @@ wch_res %>%
 
 ## MLR Estimation
 
+### Results Checks
+
+```{r}
+wch_res <- res_mi_mlr_ext %>% 
+  select(1:5, status, 
+         contains("load_"), contains("fact_"),
+         contains("error_"), contains("cor_resid_"))
+
+wch_res %>% filter(error_var_min < 0)
+```
+
+
+### Full Results Table
+
 ```{r}
 wch_res <- res_mi_mlr_ext %>% 
   select(1:5, status, 
@@ -153,7 +167,48 @@ wch_res %>%
   scroll_box(width = NULL, height = "800px", fixed_thead = T)
 
 
+```
+
+
+## WLSMV Estimation
+
+```{r}
+wch_res <- res_mi_ordinal_ext %>% 
+  select(1:5, status, 
+         contains("load_"), contains("fact_"),
+         contains("error_"), contains("cor_resid_"))
+
+wch_res %>%
+  mutate_at(c(7:16), ~ round(.x, 3)) %>%
+  add_cell_spec() %>%
+  kable(escape = FALSE, booktabs = TRUE) %>%
+  kable_styling() %>%
+  add_column_spec() %>%
+  scroll_box(width = NULL, height = "800px", fixed_thead = T)
 
 ```
 
+## Additional Comparisons
+
+### Compare Loadings of Caci's model
+
+```{r}
+res_mi_mlr_ext %>% 
+  select(model, group, constraint, status, 
+         contains("load_")) %>%
+  left_join(
+    res_mi_ordinal_ext %>% 
+      select(model, group, constraint, status, 
+             contains("load_")),
+    suffix = c("_MLR", "_WLSMV"),
+    by = c("model", "group", "constraint")
+  ) %>%
+  select(model, group, constraint, 
+         contains("status"), contains("load_min_"), contains("load_max_"), 
+         everything()) %>%
+  filter(model == "caci_3f_cor") %>%
+  kable(escape = FALSE, booktabs = TRUE) %>%
+  kable_styling()
+
+```
 

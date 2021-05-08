@@ -152,7 +152,14 @@ res_mi_mlr_ext %>% select(1:5, status,
                           contains("load_"), contains("fact_"),
                           contains("error_"), contains("cor_resid_"))
 
+## extend MGCFA (MI) models for WLSMV estimation:
+res_mi_ordinal_ext <- res_mi_ordinal %>%
+  extend_cfa_parameter_summary()
+res_mi_ordinal_ext %>% select(1:5, status, 
+                          contains("load_"), contains("fact_"),
+                          contains("error_"), contains("cor_resid_"))
 
 save.image(file = file.path(path_tmp, "results-all_2021-05-04--21-03-00---f25fcea3---extended.Rdata"))
 
 
+  
