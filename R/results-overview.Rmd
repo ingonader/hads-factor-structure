@@ -28,18 +28,6 @@ wch_res %>%
   row_spec(which.min(wch_res[["rmsea.robust"]]), bold = TRUE, background = "lightgreen")
 ```
 
-## WLSMV Estimation
-
-```{r}
-wch_res <- res_cfa_ordinal
-wch_res %>% select(model, npar, cfi.scaled, rmsea.scaled, status) %>%
-  mutate_at(c("cfi.scaled", "rmsea.scaled"), ~ round(.x, 3)) %>%
-  kable() %>%
-  kable_styling() %>%
-  row_spec(which.max(wch_res[["cfi.scaled"]]), bold = TRUE, background = "lightgreen") %>%
-  row_spec(which.min(wch_res[["rmsea.scaled"]]), bold = TRUE, background = "lightgreen")
-
-```
 
 ## Warnings
 
@@ -47,10 +35,6 @@ wch_res %>% select(model, npar, cfi.scaled, rmsea.scaled, status) %>%
 res_cfa_mlr %>% filter(status != "success") %>% pull(status_msg) %>% cat()
 ```
 
-
-```{r}
-res_cfa_ordinal %>% filter(status != "success") %>% pull(status_msg) %>% cat()
-```
 
 
 # Measurement Invariance
@@ -76,25 +60,7 @@ wch_res %>%
 
 ```
 
-## WLSMV Estimation
 
-```{r}
-wch_res <- res_mi_ordinal
-is_groupmodel <- grepl("group", wch_res[["constraint"]])
-is_groupmodel_red <- is_groupmodel & (wch_res[["cfi.scaled"]] < 0.95)
-is_groupmodel_green <- is_groupmodel & (wch_res[["cfi.scaled"]] >= 0.95)
-is_invariant <- (wch_res[["anova_p"]] < 0.05)
-
-wch_res %>% 
-  select(model, group, grps, grps_n, constraint, npar, cfi.scaled, anova_chisq, anova_df, anova_chisq_per_df, anova_p) %>%
-  mutate(across(c(cfi.scaled, anova_chisq, anova_chisq_per_df, anova_p), ~ round(.x, 3))) %>%
-  kable() %>%
-  kable_styling() %>%
-  row_spec(which(is_groupmodel), bold = TRUE) %>%
-  row_spec(which(is_groupmodel_green), background = "green") %>%
-  row_spec(which(is_groupmodel_red), background = "red") %>%
-  row_spec(which(is_invariant), background = "#FFC3C3")
-```
 
 ## Warnings
 
@@ -112,17 +78,3 @@ res_mi_mlr %>% filter(status != "success") %>% pull(status_msg) %>% unique() %>%
 ```
 
 
-```{r}
-res_mi_ordinal %>% filter(status != "success") %>%
-  group_by(status, model, group) %>%
-  count() %>%
-  select(n, everything()) %>%
-  kable() %>%
-  kable_styling()
-```
-
-```{r}
-res_mi_ordinal %>% filter(status != "success") %>% pull(status_msg) %>% 
-  stringr::str_replace_all("= [0-9.e-]+", "") %>% unique() %>% cat()
-
-```

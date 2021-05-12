@@ -138,24 +138,10 @@ res_cfa_mlr_ext %>% select(model, npar, cfi.robust, rmsea.robust, status,
                            contains("load_"), contains("fact_"),
                            contains("error_"), contains("cor_resid_"))
 
-## extend CFA results for WLSMV estimation:
-res_cfa_ordinal_ext <- res_cfa_ordinal %>% 
-  extend_cfa_parameter_summary()
-res_cfa_ordinal_ext %>% select(model, npar, cfi.scaled, rmsea.scaled, status, 
-                           contains("load_"), contains("fact_"),
-                           contains("error_"), contains("cor_resid_"))
-
 ## extend MGCFA (MI) models for MLR estimation:
 res_mi_mlr_ext <- res_mi_mlr %>%
   extend_cfa_parameter_summary()
 res_mi_mlr_ext %>% select(1:5, status, 
-                          contains("load_"), contains("fact_"),
-                          contains("error_"), contains("cor_resid_"))
-
-## extend MGCFA (MI) models for WLSMV estimation:
-res_mi_ordinal_ext <- res_mi_ordinal %>%
-  extend_cfa_parameter_summary()
-res_mi_ordinal_ext %>% select(1:5, status, 
                           contains("load_"), contains("fact_"),
                           contains("error_"), contains("cor_resid_"))
 

@@ -320,8 +320,8 @@ mod_exp <- "
       c01 < .995          ## .. to remain smaller than one, to avoid heywood case
 "
 fit_cfa <- cfa(mod_exp, data = dat_fa, estimator = "MLR", std.lv = TRUE)
-summary(fit_cfa, fit.measures = TRUE)
-fit_cfa %>% inspect(what = "cov.lv")
+# summary(fit_cfa, fit.measures = TRUE)
+# fit_cfa %>% inspect(what = "cov.lv")
 
 ## construct dataset for export:
 dat_export <- as_tibble(lavPredict(fit_cfa)) %>%

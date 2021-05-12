@@ -47,18 +47,6 @@ res_cfa_mlr %>%
 ## Warning messages:
 res_cfa_mlr %>% filter(status != "success") %>% pull(status_msg) %>% cat()
 
-## ------------------------------------------------------------------------- ##
-## WLSMV estimation:
-## ------------------------------------------------------------------------- ##
-
-## models and their status:
-res_cfa_ordinal %>%
-  select(model, npar, cfi.scaled, rmsea.scaled, status) %>%
-  mutate_at(c("cfi.scaled", "rmsea.scaled"), ~ round(.x, 3))
-
-## Warning messages:
-res_cfa_ordinal %>% filter(status != "success") %>% pull(status_msg) %>% cat()
-
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
 ## inspect a specific model
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
@@ -74,19 +62,9 @@ res_cfa_mlr$fit[[wch_model]] %>% inspect(what = "cov.lv")
 res_cfa_mlr$fit[[wch_model]] %>% inspect(what = "cov.lv") %>% det()
 res_cfa_mlr$fit[[wch_model]] %>% inspect(what = "cor.lv")
 
-## factor covariances and correlations for WLSMV:
-res_cfa_ordinal$fit[[wch_model]] %>% inspect(what = "cov.lv") %>% {apply(., 1:2, round, 7)}
-res_cfa_ordinal$fit[[wch_model]] %>% inspect(what = "cov.lv") %>% det()
-
 ## inspect loadings:
 loadings_mlr <- res_cfa_mlr$fit[[wch_model]] %>% inspect(what = "std") %>% .$lambda
-loadings_ordinal <- res_cfa_ordinal$fit[[wch_model]] %>% inspect(what = "std") %>% .$lambda 
-bind_cols(
-  loadings_mlr, 
-  loadings_ordinal
-)
 range(loadings_mlr[loadings_mlr > 0]) %>% round(2)
-range(loadings_ordinal[loadings_ordinal > 0]) %>% round(2)
 
 ## inspect error variances:
 res_cfa_mlr$fit[[wch_model]] %>% summary()
@@ -112,10 +90,6 @@ res_cfa_mlr$fit[[wch_model]] %>%
 
 ## warning messages:
 res_mi_mlr %>% filter(status != "success") %>% pull(status_msg) %>% unique() %>% cat()
-res_mi_ordinal %>% filter(status != "success") %>% pull(status_msg) %>% 
-  stringr::str_replace_all("= [0-9.e-]+", "") %>% 
-  stringr::str_replace_all("symptom[ \\t\\n]*that[ \\t\\n]*the[ \\t\\n]*model", "symptom that the model") %>% 
-  unique() %>% cat()
 
 ## overview:
 res_mi_mlr %>% filter(status != "success") %>%
