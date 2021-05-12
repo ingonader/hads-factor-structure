@@ -329,6 +329,6 @@ dat_export <- as_tibble(lavPredict(fit_cfa)) %>%
     dat_fa[groups_cfa]
   )
 
-save(mod_exp, fit_cfa, dat_export,
+save(mod_exp, fit_cfa, groups_cfa, dat_export,
      file = file.path(path_tmp, "dunbar_3f_cor_constrained.Rdata"))
 
