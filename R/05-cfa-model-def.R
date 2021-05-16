@@ -61,6 +61,14 @@ models_cfa <- list(
       f2 =~ i_01 + i_05 + i_07 + i_11                              ## neg. affectivigy (NA)
       f3 =~ i_02 + i_04 + i_06 + i_07 + i_08 + i_10 + i_12 + i_14  ## anhedonicstic depression
   ",
+  "dunbar_3f_cor_c01" = "
+      ## Dunbar et al., 2000, correlated factors, item 7 loads to 2 factors, with constraints
+      f1 =~ i_03 + i_09 + i_13                                     ## autonomic anxiety
+      f2 =~ i_01 + i_05 + i_07 + i_11                              ## neg. affectivigy (NA)
+      f3 =~ i_02 + i_04 + i_06 + i_07 + i_08 + i_10 + i_12 + i_14  ## anhedonicstic depression
+      f1 ~~ c01 * f2      ## constrain covariance (== correlation, if std.lv = TRUE) of f1 and f2...
+      c01 < .995          ## .. to remain smaller than one, to avoid Heywood case
+  ",
   "dunbar_3f_hier" = "
       ## Dunbar et al., 2000, hierarchical factors, item 7 loads to 2 factors
       f1 =~ i_03 + i_09 + i_13                                     ## autonomic anxiety
