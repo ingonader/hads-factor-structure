@@ -71,7 +71,7 @@ library(semTools)
 # group <- "t1_alter_grp2"
 
 ## define function to estimate a grouped model with all levels of constraints:
-fit_constrained_mlr <- function(lavaan_str, data, group) {
+fit_constrained_mlr <- function(lavaan_str, data, group, ID.fac = "auto.fix.first") {
   ## remove missings in grouping variable:
   group_miss <- is.na(data[[group]])
   data <- data[!group_miss, ]
@@ -88,25 +88,25 @@ fit_constrained_mlr <- function(lavaan_str, data, group) {
     ## configurational invariance: items load on same factors:
     "configurational" = lavaan_str %>%
       measEq.syntax(data = data, group = group,
-                    ID.fac = "auto.fix.first",
+                    ID.fac = ID.fac,
                     group.equal = c("configurational")) %>%
       as.character(),
     ## weak (metric) invariance: factor laodings identical
     "metric" = lavaan_str %>% 
       measEq.syntax(data = data, group = group,
-                    ID.fac = "auto.fix.first",
+                    ID.fac = ID.fac,
                     group.equal = c("loadings")) %>%
       as.character(),
     ## strong (scalar) invariance: factor loadings + item intercepts
     "scalar" = lavaan_str %>%
       measEq.syntax(data = data, group = group,
-                    ID.fac = "auto.fix.first",
+                    ID.fac = ID.fac,
                     group.equal = c("loadings", "intercepts")) %>%
       as.character(),
     ## strict invariance: factor loadings + item intercepts + residual variances
     "strict" = lavaan_str %>%
       measEq.syntax(data = data, group = group,
-                    ID.fac = "auto.fix.first",
+                    ID.fac = ID.fac,
                     group.equal = c("loadings", "intercepts", "residuals")) %>%
       as.character()
   )
@@ -188,9 +188,9 @@ groups_cfa <- c(
 )
 
 ## define function to fit constrained models for all grouping variables in one specific model:
-fit_groups_mlr <- function(lavaan_str, data, group_cfa) {
+fit_groups_mlr <- function(lavaan_str, data, group_cfa, ID.fac = "auto.fix.first") {
   purrr::map_dfr(
-    groups_cfa, ~ fit_constrained_mlr(lavaan_str, data = data, group = .x)
+    groups_cfa, ~ fit_constrained_mlr(lavaan_str, data = data, group = .x, ID.fac = ID.fac)
   )
 }
 # tmp3 <- fit_groups_mlr(models_cfa[[4]], data = dat_fa, group_cfa = group_cfa)
