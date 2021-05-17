@@ -34,13 +34,34 @@ library(lavaan)
 # fit_cfa %>% inspect(what = "cov.lv")
 # bind_rows(fit_cfa_summary$FIT)
 
-## get fit indices of all models:
-res_cfa_mlr <- models_cfa %>% {
-  bind_cols(
-    model = names(.),
-    purrr::map_dfr(., get_fit_indices, dat_fa, estimator = "MLR")
+# ## get fit indices of all models:
+# ## (without using semTools syntax):
+# res_cfa_mlr <- models_cfa %>% {
+#   bind_cols(
+#     model = names(.),
+#     purrr::map_dfr(., get_fit_indices, dat_fa, estimator = "MLR")
+#     )
+# }
+
+## get fit indices of all models using semTools syntax:
+get_fitindices_of_model_list <- function(models_cfa, data, estimator, ID.fac = "auto.fix.first", ...) {
+  ## get model names:
+  model_names <- names(models_cfa)
+  ## add semtools syntax to all models in list:
+  models_cfa_semtools <- models_cfa %>%
+    purrr::map(., 
+               ~ as.character(measEq.syntax(.x, data = data, ID.fac = ID.fac))
+    )
+  ## apply get_fit_indices:
+  ret <- bind_cols(
+    tibble("model" = model_names),
+      purrr::map_dfr(models_cfa_semtools, get_fit_indices, dat_fa, estimator = "MLR")
     )
 }
+
+
+## get fit indices of all models using semTools syntax:
+res_cfa_mlr <- get_fitindices_of_model_list(models_cfa, data = dat_fa, estimator = "MLR", ID.fac =)
 # res_cfa_mlr %>% select(model, npar, cfi, cfi.scaled, cfi.robust, rmsea, rmsea.scaled, rmsea.robust, status, status_msg)
 # res_cfa_mlr %>% select(model, npar, cfi.robust, rmsea.robust, status)
 
