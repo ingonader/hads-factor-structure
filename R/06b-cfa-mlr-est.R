@@ -44,7 +44,8 @@ library(lavaan)
 # }
 
 ## get fit indices of all models using semTools syntax:
-get_fitindices_of_model_list <- function(models_cfa, data, estimator, ID.fac = "auto.fix.first", ...) {
+get_fitindices_of_model_list <- function(models_cfa, model_constraints, 
+                                         data, estimator, ID.fac = "auto.fix.first", ...) {
   ## get model names:
   model_names <- names(models_cfa)
   ## add semtools syntax to all models in list:
@@ -52,6 +53,12 @@ get_fitindices_of_model_list <- function(models_cfa, data, estimator, ID.fac = "
     purrr::map(., 
                ~ as.character(measEq.syntax(.x, data = data, ID.fac = ID.fac))
     )
+  ## add model constraints in semtools syntax:
+  models_cfa_semtools <- purrr::map2(
+    models_cfa_semtools,
+    model_constraints,
+    ~ paste(.x, .y, "\n")
+  )
   ## apply get_fit_indices:
   ret <- bind_cols(
     tibble("model" = model_names),
@@ -59,9 +66,15 @@ get_fitindices_of_model_list <- function(models_cfa, data, estimator, ID.fac = "
     )
 }
 
-
 ## get fit indices of all models using semTools syntax:
-res_cfa_mlr <- get_fitindices_of_model_list(models_cfa, data = dat_fa, estimator = "MLR", ID.fac =)
+res_cfa_mlr <- get_fitindices_of_model_list(
+  models_cfa, 
+  model_constraints = models_cfa_constraints_base, 
+  data = dat_fa, 
+  estimator = "MLR", 
+  ID.fac = "auto.fix.first")
+
+## inspect results:
 # res_cfa_mlr %>% select(model, npar, cfi, cfi.scaled, cfi.robust, rmsea, rmsea.scaled, rmsea.robust, status, status_msg)
 # res_cfa_mlr %>% select(model, npar, cfi.robust, rmsea.robust, status)
 

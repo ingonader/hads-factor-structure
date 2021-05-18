@@ -61,14 +61,14 @@ models_cfa <- list(
       f2 =~ i_01 + i_05 + i_07 + i_11                              ## neg. affectivigy (NA)
       f3 =~ i_02 + i_04 + i_06 + i_07 + i_08 + i_10 + i_12 + i_14  ## anhedonicstic depression
   ",
-  "dunbar_3f_cor_c01" = "
-      ## Dunbar et al., 2000, correlated factors, item 7 loads to 2 factors, with constraints
-      f1 =~ i_03 + i_09 + i_13                                     ## autonomic anxiety
-      f2 =~ i_01 + i_05 + i_07 + i_11                              ## neg. affectivigy (NA)
-      f3 =~ i_02 + i_04 + i_06 + i_07 + i_08 + i_10 + i_12 + i_14  ## anhedonicstic depression
-      f1 ~~ c01 * f2      ## constrain covariance (== correlation, if std.lv = TRUE) of f1 and f2...
-      c01 < .995          ## .. to remain smaller than one, to avoid Heywood case
-  ",
+#   "dunbar_3f_cor_c01" = "
+#       ## Dunbar et al., 2000, correlated factors, item 7 loads to 2 factors, with constraints
+#       f1 =~ i_03 + i_09 + i_13                                     ## autonomic anxiety
+#       f2 =~ i_01 + i_05 + i_07 + i_11                              ## neg. affectivigy (NA)
+#       f3 =~ i_02 + i_04 + i_06 + i_07 + i_08 + i_10 + i_12 + i_14  ## anhedonicstic depression
+#       f1 ~~ c01 * f2      ## constrain covariance (== correlation, if std.lv = TRUE) of f1 and f2...
+#       c01 < .995          ## .. to remain smaller than one, to avoid Heywood case
+#   ",
   "dunbar_3f_hier" = "
       ## Dunbar et al., 2000, hierarchical factors, item 7 loads to 2 factors
       f1 =~ i_03 + i_09 + i_13                                     ## autonomic anxiety
@@ -120,4 +120,40 @@ models_cfa <- list(
 # det(lavInspect(fit_cfa, "cov.lv"))
 # eigen(lavInspect(fit_cfa, "cov.lv"))$values
 
+
+## constraints in semtools syntax for base models:
+models_cfa_constraints_base <- list(
+  "zigmond_2f_cor" = "",
+  "razavi_1f" = "",
+  "moorey_2f_cor" = "",
+  "zigmond_mod01_2f_cor" = "",
+  "zigmond_mod02_2f_cor" = "",
+  "dunbar_3f_cor" = "
+      psi.2_1 < sqrt(psi.1_1) * sqrt(psi.2_2) * .995   ## constrain cor(f1, f2) to remain < 1
+  ",
+  "dunbar_3f_hier" = "",
+  "friedman_3f_cor" = "",
+  "friedman_3f_ortho" = "",
+  "caci_3f_cor" = "",
+  "emons_2f_cor" = ""
+)
+
+## constraints in semtools syntax for multigroup CFAs
+## (measurement invariance):
+models_cfa_constraints_mi <- list(
+  "zigmond_2f_cor" = "",
+  "razavi_1f" = "",
+  "moorey_2f_cor" = "",
+  "zigmond_mod01_2f_cor" = "",
+  "zigmond_mod02_2f_cor" = "",
+  "dunbar_3f_cor" = "
+      psi.2_1.g1 < sqrt(psi.1_1.g1) * sqrt(psi.2_2.g1) * .990   ## constrain cor(f1, f2) to remain < 1 (in group 1)
+      psi.2_1.g2 < sqrt(psi.1_1.g2) * sqrt(psi.2_2.g2) * .990   ## constrain cor(f1, f2) to remain < 1 (in group 2)
+  ",
+  "dunbar_3f_hier" = "",
+  "friedman_3f_cor" = "",
+  "friedman_3f_ortho" = "",
+  "caci_3f_cor" = "",
+  "emons_2f_cor" = ""
+)
 
