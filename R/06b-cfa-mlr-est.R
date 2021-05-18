@@ -139,10 +139,13 @@ fit_constrained_mlr <- function(lavaan_str, data, group, ID.fac = "auto.fix.firs
       grps_n = grps_n,
       constraint = paste0("group ", ., ": ", grps[.]),
       purrr::map_dfr(.,
-        ~ get_fit_indices(lavaan_str, 
-                          data = data %>% filter((!!as.name(group)) == grps[.x]),
-                          group = NULL, 
-                          estimator = "MLR")
+        ~ get_fit_indices(
+          as.character(
+            measEq.syntax(lavaan_str, data = data, ID.fac = ID.fac)
+          ),
+          data = data %>% filter((!!as.name(group)) == grps[.x]),
+          group = NULL, 
+          estimator = "MLR")
       )
     )
   }
