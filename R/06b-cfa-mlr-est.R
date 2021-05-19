@@ -111,14 +111,17 @@ fit_constrained_mlr <- function(lavaan_str, model_constraints_base,
   ## remove missings in grouping variable:
   group_miss <- is.na(data[[group]])
   data <- data[!group_miss, ]
-  ## get number of groups from data:
-  grps <- data[[group]] %>% unique()
-  n_grps <- grps %>% length()
+  ## get table of groups:
+  grps_table <- data[[group]] %>% 
+    table(useNA = "if")
   ## get sample size of each group as string:
-  grps_n <- data[[group]] %>% 
-    table(useNA = "if") %>%
+  grps_n <- grps_table %>%
     paste(collapse = ", ") %>%
     paste0("[", ., "]")
+  ## get groups:
+  grps <- names(grps_table)
+  ## get number of groups:
+  n_grps <- length(grps)
   ## define list of all model definitions:
   models_constrained <- list(
     ## configurational invariance: items load on same factors:
@@ -214,7 +217,7 @@ fit_constrained_mlr <- function(lavaan_str, model_constraints_base,
 # debug(fit_constrained_mlr)
 # undebug(fit_constrained_mlr)
 # wch_model <- "dunbar_3f_cor"
-# fit_constrained_mlr(models_cfa[[wch_model]], 
+# fit_constrained_mlr(models_cfa[[wch_model]],
 #                     model_constraints_base = models_cfa_constraints_base[[wch_model]],
 #                     model_constraints_mi = models_cfa_constraints_mi[[wch_model]],
 #                     data = dat_fa, group = "t1_geschlecht")
