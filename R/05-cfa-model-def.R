@@ -129,7 +129,7 @@ models_cfa_constraints_base <- list(
   "zigmond_mod01_2f_cor" = "",
   "zigmond_mod02_2f_cor" = "",
   "dunbar_3f_cor" = "
-      psi.2_1 < sqrt(psi.1_1) * sqrt(psi.2_2) * .995   ## constrain cor(f1, f2) to remain < 1
+      psi.2_1 < sqrt(abs(psi.1_1)) * sqrt(abs(psi.2_2)) * .995   ## constrain cor(f1, f2) to remain < 1
   ",
   "dunbar_3f_hier" = "",
   "friedman_3f_cor" = "",
@@ -147,8 +147,8 @@ models_cfa_constraints_mi <- list(
   "zigmond_mod01_2f_cor" = "",
   "zigmond_mod02_2f_cor" = "",
   "dunbar_3f_cor" = "
-      psi.2_1.g1 < sqrt(psi.1_1.g1) * sqrt(psi.2_2.g1) * .990   ## constrain cor(f1, f2) to remain < 1 (in group 1)
-      psi.2_1.g2 < sqrt(psi.1_1.g2) * sqrt(psi.2_2.g2) * .990   ## constrain cor(f1, f2) to remain < 1 (in group 2)
+      psi.2_1.g1 < sqrt(abs(psi.1_1.g1)) * sqrt(abs(psi.2_2.g1)) * .990   ## constrain cor(f1, f2) to remain < 1 (in group 1)
+      psi.2_1.g2 < sqrt(abs(psi.1_1.g2)) * sqrt(abs(psi.2_2.g2)) * .990   ## constrain cor(f1, f2) to remain < 1 (in group 2)
   ",
   "dunbar_3f_hier" = "",
   "friedman_3f_cor" = "",
