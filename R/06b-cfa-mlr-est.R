@@ -247,9 +247,14 @@ groups_cfa <- c(
 )
 
 ## define function to fit constrained models for all grouping variables in one specific model:
-fit_groups_mlr <- function(lavaan_str, data, group_cfa, ID.fac = "auto.fix.first") {
+fit_groups_mlr <- function(lavaan_str, model_constraints_base,
+                           model_constraints_mi, 
+                           data, group_cfa, ID.fac = "auto.fix.first") {
   purrr::map_dfr(
-    groups_cfa, ~ fit_constrained_mlr(lavaan_str, data = data, group = .x, ID.fac = ID.fac)
+    groups_cfa, ~ fit_constrained_mlr(lavaan_str, 
+                                      model_constraints_base = model_constraints_base,
+                                      model_constraints_mi = model_constraints_mi, 
+                                      data = data, group = .x, ID.fac = ID.fac)
   )
 }
 # tmp3 <- fit_groups_mlr(models_cfa[[4]], data = dat_fa, group_cfa = group_cfa)
@@ -260,7 +265,10 @@ res_mi_mlr <- NULL
 for (i in seq_along(models_cfa)) {
   ## estimate constrained models for determining measurement invariance for a specific factor structure:
   res_this <- purrr::map_dfr(
-    models_cfa[[i]], ~ fit_groups_mlr(.x, data = dat_fa, group_cfa = group_cfa)
+    i, ~ fit_groups_mlr(models_cfa[[.x]], 
+                        model_constraints_base = models_cfa_constraints_base[[i]],
+                        model_constraints_mi = models_cfa_constraints_mi[[i]],
+                        data = dat_fa, group_cfa = group_cfa)
   )
   ## add name of model to results data:
   res_this <- tibble(model = names(models_cfa)[i], res_this)
