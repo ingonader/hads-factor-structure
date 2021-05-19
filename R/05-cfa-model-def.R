@@ -129,12 +129,14 @@ models_cfa_constraints_base <- list(
   "zigmond_mod01_2f_cor" = "",
   "zigmond_mod02_2f_cor" = "",
   "dunbar_3f_cor" = "
-      psi.2_1 < sqrt(abs(psi.1_1)) * sqrt(abs(psi.2_2)) * .995   ## constrain cor(f1, f2) to remain < 1
+      psi.2_1 < sqrt(abs(psi.1_1)) * sqrt(abs(psi.2_2)) * .990   ## constrain cor(f1, f2) to remain < 1
   ",
   "dunbar_3f_hier" = "",
   "friedman_3f_cor" = "",
   "friedman_3f_ortho" = "",
-  "caci_3f_cor" = "",
+  "caci_3f_cor" = "
+      psi.3_2 < sqrt(abs(psi.3_3)) * sqrt(abs(psi.2_2)) * .94    ## constraint cor(f3, f2) to remain < .95 (necessary for smaller groups, e.g. tumorart)
+  ",
   "emons_2f_cor" = ""
 )
 
@@ -150,10 +152,16 @@ models_cfa_constraints_mi <- list(
       psi.2_1.g1 < sqrt(abs(psi.1_1.g1)) * sqrt(abs(psi.2_2.g1)) * .990   ## constrain cor(f1, f2) to remain < 1 (in group 1)
       psi.2_1.g2 < sqrt(abs(psi.1_1.g2)) * sqrt(abs(psi.2_2.g2)) * .990   ## constrain cor(f1, f2) to remain < 1 (in group 2)
   ",
-  "dunbar_3f_hier" = "",
+  "dunbar_3f_hier" = "
+      psi.1_1.g1 > 0   ## constrain factor variance: needs to be > 1 (in grp 1)
+      psi.1_1.g2 > 0   ## constrain factor variance: needs to be > 1 (in grp 2)
+  ",
   "friedman_3f_cor" = "",
   "friedman_3f_ortho" = "",
-  "caci_3f_cor" = "",
+  "caci_3f_cor" = "
+      psi.3_2.g1 < sqrt(abs(psi.3_3.g1)) * sqrt(abs(psi.2_2.g1)) * .94   ## constrain cor(f3, f2) to remain < .95 (in group 1)
+      psi.3_2.g2 < sqrt(abs(psi.3_3.g2)) * sqrt(abs(psi.2_2.g2)) * .94   ## constrain cor(f3, f2) to remain < .95 (in group 2)
+  ",
   "emons_2f_cor" = ""
 )
 

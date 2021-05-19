@@ -220,15 +220,21 @@ fit_constrained_mlr <- function(lavaan_str, model_constraints_base,
 # fit_constrained_mlr(models_cfa[[wch_model]],
 #                     model_constraints_base = models_cfa_constraints_base[[wch_model]],
 #                     model_constraints_mi = models_cfa_constraints_mi[[wch_model]],
-#                     data = dat_fa, group = "t1_geschlecht")
+#                     data = dat_fa, group = "tumorart")
 # 
+# wch_model <- "dunbar_3f_hier"
+# models_cfa[[wch_model]] %>% 
+#   measEq.syntax(data = dat_fa, ID.fac = "auto.fix.first") %>% 
+#   as.character() %>% cat()
 # tmp <- fit_constrained_mlr(
-#   models_cfa[[wch_model]], 
+#   models_cfa[[wch_model]],
 #   model_constraints_base = "
-#   psi.2_1 < sqrt(abs(psi.1_1)) * sqrt(abs(psi.2_2)) * .995
 #   ",
-#   model_constraints_mi = models_cfa_constraints_mi[[wch_model]],
-#   data = dat_fa, group = "t1_geschlecht"
+#   model_constraints_mi = "
+#       psi.1_1.g1 > 0   ## constrain factor variance: needs to be > 1 (in grp 1)
+#       psi.1_1.g2 > 0   ## constrain factor variance: needs to be > 1 (in grp 2)
+#   ",
+#   data = dat_fa, group = "tumorart"
 # )
 # tmp$status
 # tmp$status_msg
@@ -289,6 +295,12 @@ for (i in seq_along(models_cfa)) {
 #   count() %>%
 #   select(n, everything())
 # res_mi_mlr %>% filter(status != "success") %>% pull(status_msg) %>% unique() %>% cat()
+# res_mi_mlr %>% filter(status != "success") %>%
+#   mutate(status_msg = status_msg %>%
+#            stringr::str_replace_all(".*lavaan WARNING: ", "") %>%
+#            stringr::str_replace_all('use lavInspect.*$', "") %>%
+#            stringr::str_replace_all("[[:blank:][:cntrl:]]+", " ")) %>%
+#   group_by(model, group, status_msg) %>% count()
 
 ## ------------------------------------------------------------------------- ##
 ## stacked bar plot of delta-CFIs
@@ -342,40 +354,40 @@ ggsave(filename = file.path(path_plot, "fig-mi-02-mlr.jpg"), width = 8, height =
 ## try different model specifications
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
 
-mod_tmp <- "## Dunbar et al., 2000, hierarchical factors, item 7 loads to 2 factors
-      f1 =~ i_03 + i_09 + i_13                                     ## autonomic anxiety
-      f2 =~ i_01 + i_05 + i_07 + i_11                              ## neg. affectivigy (NA)
-      f3 =~ i_02 + i_04 + i_06 + i_07 + i_08 + i_10 + i_12 + i_14  ## anhedonicstic depression
-      f2 =~ f1 + f3     ## NA explains AA and AD
-      f1 ~~ 0*f3  
-"
-mod_tmp <- "## Dunbar et al., 2000, hierarchical factors, item 7 loads to 2 factors
-      f1 =~ i_03 + i_09 + i_13                                     ## autonomic anxiety
-      f2 =~ i_01 + i_05 + i_07 + i_11                              ## neg. affectivigy (NA)
-      f3 =~ i_02 + i_04 + i_06 + i_07 + i_08 + i_10 + i_12 + i_14  ## anhedonicstic depression
-      f1 ~ f2
-      f3 ~ f2     ## NA explains AA and AD
-      f1 ~~ 0*f3  
-"
-fit_cfa <- cfa(mod_tmp, data = dat_fa, estimator = "MLR", std.lv = TRUE)
-fit_cfa %>% inspect(what = "cov.lv")
-fit_cfa %>% summary()
-
-## estimate one model with constraints:
-tmp_model_def <- models_cfa[["dunbar_3f_cor"]]
-tmp_model_def <- paste0(
-  models_cfa[["dunbar_3f_cor"]],
-  "f1 ~~ c01 * f2",  "\n",
-  "c01 < .99", "\n"
-)
-cat(tmp_model_def)
-#fit_cfa <- cfa(tmp_model_def, data = dat_fa, estimator = "MLR")
-fit_ind <- get_fit_indices(tmp_model_def, data = dat_fa, estimator = "MLR")
-fit_ind
-fit_ind$status
-fit_cfa <- fit_ind$fit[[1]]
-fit_cfa %>% inspect(what = "cov.lv")
-fit_cfa %>% inspect(what = "cov.lv") %>% det()
+# mod_tmp <- "## Dunbar et al., 2000, hierarchical factors, item 7 loads to 2 factors
+#       f1 =~ i_03 + i_09 + i_13                                     ## autonomic anxiety
+#       f2 =~ i_01 + i_05 + i_07 + i_11                              ## neg. affectivigy (NA)
+#       f3 =~ i_02 + i_04 + i_06 + i_07 + i_08 + i_10 + i_12 + i_14  ## anhedonicstic depression
+#       f2 =~ f1 + f3     ## NA explains AA and AD
+#       f1 ~~ 0*f3  
+# "
+# mod_tmp <- "## Dunbar et al., 2000, hierarchical factors, item 7 loads to 2 factors
+#       f1 =~ i_03 + i_09 + i_13                                     ## autonomic anxiety
+#       f2 =~ i_01 + i_05 + i_07 + i_11                              ## neg. affectivigy (NA)
+#       f3 =~ i_02 + i_04 + i_06 + i_07 + i_08 + i_10 + i_12 + i_14  ## anhedonicstic depression
+#       f1 ~ f2
+#       f3 ~ f2     ## NA explains AA and AD
+#       f1 ~~ 0*f3  
+# "
+# fit_cfa <- cfa(mod_tmp, data = dat_fa, estimator = "MLR", std.lv = TRUE)
+# fit_cfa %>% inspect(what = "cov.lv")
+# fit_cfa %>% summary()
+# 
+# ## estimate one model with constraints:
+# tmp_model_def <- models_cfa[["dunbar_3f_cor"]]
+# tmp_model_def <- paste0(
+#   models_cfa[["dunbar_3f_cor"]],
+#   "f1 ~~ c01 * f2",  "\n",
+#   "c01 < .99", "\n"
+# )
+# cat(tmp_model_def)
+# #fit_cfa <- cfa(tmp_model_def, data = dat_fa, estimator = "MLR")
+# fit_ind <- get_fit_indices(tmp_model_def, data = dat_fa, estimator = "MLR")
+# fit_ind
+# fit_ind$status
+# fit_cfa <- fit_ind$fit[[1]]
+# fit_cfa %>% inspect(what = "cov.lv")
+# fit_cfa %>% inspect(what = "cov.lv") %>% det()
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
 ## export 3-factor model with constraint but no additional specification
