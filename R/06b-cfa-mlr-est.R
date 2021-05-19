@@ -105,7 +105,9 @@ library(semTools)
 # group <- "t1_alter_grp2"
 
 ## define function to estimate a grouped model with all levels of constraints:
-fit_constrained_mlr <- function(lavaan_str, data, group, ID.fac = "auto.fix.first") {
+fit_constrained_mlr <- function(lavaan_str, model_constraints_base,
+                                model_constraints_mi,
+                                data, group, ID.fac = "auto.fix.first") {
   ## remove missings in grouping variable:
   group_miss <- is.na(data[[group]])
   data <- data[!group_miss, ]
@@ -124,25 +126,29 @@ fit_constrained_mlr <- function(lavaan_str, data, group, ID.fac = "auto.fix.firs
       measEq.syntax(data = data, group = group,
                     ID.fac = ID.fac,
                     group.equal = c("configurational")) %>%
-      as.character(),
+      as.character() %>% 
+      paste0(model_constraints_mi),
     ## weak (metric) invariance: factor laodings identical
     "metric" = lavaan_str %>% 
       measEq.syntax(data = data, group = group,
                     ID.fac = ID.fac,
                     group.equal = c("loadings")) %>%
-      as.character(),
+      as.character() %>% 
+      paste0(model_constraints_mi),
     ## strong (scalar) invariance: factor loadings + item intercepts
     "scalar" = lavaan_str %>%
       measEq.syntax(data = data, group = group,
                     ID.fac = ID.fac,
                     group.equal = c("loadings", "intercepts")) %>%
-      as.character(),
+      as.character() %>% 
+      paste0(model_constraints_mi),
     ## strict invariance: factor loadings + item intercepts + residual variances
     "strict" = lavaan_str %>%
       measEq.syntax(data = data, group = group,
                     ID.fac = ID.fac,
                     group.equal = c("loadings", "intercepts", "residuals")) %>%
-      as.character()
+      as.character() %>% 
+      paste0(model_constraints_mi)
   )
   ## first, fit model in each group separately:
   fit_cfa_group <- seq_along(grps) %>% {
@@ -155,7 +161,8 @@ fit_constrained_mlr <- function(lavaan_str, data, group, ID.fac = "auto.fix.firs
         ~ get_fit_indices(
           as.character(
             measEq.syntax(lavaan_str, data = data, ID.fac = ID.fac)
-          ),
+          ) %>% 
+            paste0(model_constraints_base),
           data = data %>% filter((!!as.name(group)) == grps[.x]),
           group = NULL, 
           estimator = "MLR")
@@ -206,7 +213,22 @@ fit_constrained_mlr <- function(lavaan_str, data, group, ID.fac = "auto.fix.firs
 }
 # debug(fit_constrained_mlr)
 # undebug(fit_constrained_mlr)
-# fit_constrained_mlr(models_cfa[[1]], data = dat_fa, group = "t1_geschlecht")
+# wch_model <- "dunbar_3f_cor"
+# fit_constrained_mlr(models_cfa[[wch_model]], 
+#                     model_constraints_base = models_cfa_constraints_base[[wch_model]],
+#                     model_constraints_mi = models_cfa_constraints_mi[[wch_model]],
+#                     data = dat_fa, group = "t1_geschlecht")
+# 
+# tmp <- fit_constrained_mlr(
+#   models_cfa[[wch_model]], 
+#   model_constraints_base = "
+#   psi.2_1 < sqrt(abs(psi.1_1)) * sqrt(abs(psi.2_2)) * .995
+#   ",
+#   model_constraints_mi = models_cfa_constraints_mi[[wch_model]],
+#   data = dat_fa, group = "t1_geschlecht"
+# )
+# tmp$status
+# tmp$status_msg
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
 ## measurement invariance for specified variables
