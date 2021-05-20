@@ -61,14 +61,6 @@ models_cfa <- list(
       f2 =~ i_01 + i_05 + i_07 + i_11                              ## neg. affectivigy (NA)
       f3 =~ i_02 + i_04 + i_06 + i_07 + i_08 + i_10 + i_12 + i_14  ## anhedonicstic depression
   ",
-#   "dunbar_3f_cor_c01" = "
-#       ## Dunbar et al., 2000, correlated factors, item 7 loads to 2 factors, with constraints
-#       f1 =~ i_03 + i_09 + i_13                                     ## autonomic anxiety
-#       f2 =~ i_01 + i_05 + i_07 + i_11                              ## neg. affectivigy (NA)
-#       f3 =~ i_02 + i_04 + i_06 + i_07 + i_08 + i_10 + i_12 + i_14  ## anhedonicstic depression
-#       f1 ~~ c01 * f2      ## constrain covariance (== correlation, if std.lv = TRUE) of f1 and f2...
-#       c01 < .995          ## .. to remain smaller than one, to avoid Heywood case
-#   ",
   "dunbar_3f_hier" = "
       ## Dunbar et al., 2000, hierarchical factors, item 7 loads to 2 factors
       f1 =~ i_03 + i_09 + i_13                                     ## autonomic anxiety
@@ -105,6 +97,11 @@ models_cfa <- list(
   "
 )
 
+## add the same models again (with different names) to later define constraints:
+models_cfa[["dunbar_3f_cor_constr"]] <- models_cfa[["dunbar_3f_cor"]]
+models_cfa[["dunbar_3f_hier_constr"]] <- models_cfa[["dunbar_3f_hier"]]
+models_cfa[["caci_3f_cor_constr"]] <- models_cfa[["caci_3f_cor"]]
+
 #' TODO: CHECK:
 #' * check if model specification for dunbar's hierarchical model is correct!
 #' * check if model specification for dunbar's correlated model is correct (warning msg!)
@@ -124,22 +121,19 @@ models_cfa <- list(
 ## define constraints for base models
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
 
-## TODO:
-## * move all (or most) checks to some manual check file, 08-*.R (see comments above, for example)
-## * add unconstrained version of models and 
-## * rename constrained: _cnstrnd? _cstrd? _constr?
-## * add ASSERT check that the names of the 3 groups are the same
-
 ## create list of empty strings with same names as models_cfa:
 models_cfa_constraints_base <- rep(list(""), 
                                    length = length(models_cfa)) %>% 
   set_names(names(models_cfa))
 
 ## set constraints in semtools syntax for specific base models:
-models_cfa_constraints_base[["dunbar_3f_cor"]] <- "
+models_cfa_constraints_base[["dunbar_3f_cor_constr"]] <- "
       psi.2_1 < sqrt(abs(psi.1_1)) * sqrt(abs(psi.2_2)) * .990   ## constrain cor(f1, f2) to remain < 1
   "
-models_cfa_constraints_base[["caci_3f_cor"]] <- "
+models_cfa_constraints_base[["dunbar_3f_hier_constr"]] <- "
+      psi.1_1 > 0   ## constrain factor variance: needs to be > 1
+  "
+models_cfa_constraints_base[["caci_3f_cor_constr"]] <- "
       psi.3_2 < sqrt(abs(psi.3_3)) * sqrt(abs(psi.2_2)) * .94    ## constraint cor(f3, f2) to remain < .95 (necessary for smaller groups, e.g. tumorart)
   "
 
@@ -153,15 +147,15 @@ models_cfa_constraints_mi <- rep(list(""),
   set_names(names(models_cfa))
 
 ## set constraints in semtools syntax for specific multigroup CFAs:
-models_cfa_constraints_mi[["dunbar_3f_cor"]] <- "
+models_cfa_constraints_mi[["dunbar_3f_cor_constr"]] <- "
       psi.2_1.g1 < sqrt(abs(psi.1_1.g1)) * sqrt(abs(psi.2_2.g1)) * .990   ## constrain cor(f1, f2) to remain < 1 (in group 1)
       psi.2_1.g2 < sqrt(abs(psi.1_1.g2)) * sqrt(abs(psi.2_2.g2)) * .990   ## constrain cor(f1, f2) to remain < 1 (in group 2)
   "
-models_cfa_constraints_mi[["dunbar_3f_hier"]] <- "
+models_cfa_constraints_mi[["dunbar_3f_hier_constr"]] <- "
       psi.1_1.g1 > 0   ## constrain factor variance: needs to be > 1 (in grp 1)
       psi.1_1.g2 > 0   ## constrain factor variance: needs to be > 1 (in grp 2)
   "
-models_cfa_constraints_mi[["caci_3f_cor"]] <- "
+models_cfa_constraints_mi[["caci_3f_cor_constr"]] <- "
       psi.3_2.g1 < sqrt(abs(psi.3_3.g1)) * sqrt(abs(psi.2_2.g1)) * .94   ## constrain cor(f3, f2) to remain < .95 (in group 1)
       psi.3_2.g2 < sqrt(abs(psi.3_3.g2)) * sqrt(abs(psi.2_2.g2)) * .94   ## constrain cor(f3, f2) to remain < .95 (in group 2)
   "

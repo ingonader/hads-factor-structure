@@ -76,7 +76,7 @@ res_cfa_mlr <- get_fitindices_of_model_list(
 
 ## inspect results:
 # res_cfa_mlr %>% select(model, npar, cfi, cfi.scaled, cfi.robust, rmsea, rmsea.scaled, rmsea.robust, status, status_msg)
-# res_cfa_mlr %>% select(model, npar, cfi.robust, rmsea.robust, status)
+# res_cfa_mlr %>% select(model, npar, cfi.robust, rmsea.robust, status) %>% arrange(model)
 
 #' robust RMSEA and CFI values are computed following 
 #' Brosseau-Liard, P. E., Savalei, V., and Li, L. (2012), and 
@@ -216,7 +216,7 @@ fit_constrained_mlr <- function(lavaan_str, model_constraints_base,
 }
 # debug(fit_constrained_mlr)
 # undebug(fit_constrained_mlr)
-# wch_model <- "dunbar_3f_cor"
+# wch_model <- "dunbar_3f_cor_constr"
 # fit_constrained_mlr(models_cfa[[wch_model]],
 #                     model_constraints_base = models_cfa_constraints_base[[wch_model]],
 #                     model_constraints_mi = models_cfa_constraints_mi[[wch_model]],
