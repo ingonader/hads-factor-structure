@@ -42,6 +42,8 @@ library(purrr)
 library(ggplot2)
 library(dplyr)
 library(lubridate)
+library(tictoc)
+
 
 ## ========================================================================= ##
 ## load function definitions specific for this project

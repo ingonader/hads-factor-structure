@@ -66,6 +66,9 @@ get_fitindices_of_model_list <- function(models_cfa, model_constraints,
     )
 }
 
+cat("Fitting CFA base models... ")
+tic()
+
 ## get fit indices of all models using semTools syntax:
 res_cfa_mlr <- get_fitindices_of_model_list(
   models_cfa, 
@@ -73,6 +76,8 @@ res_cfa_mlr <- get_fitindices_of_model_list(
   data = dat_fa, 
   estimator = "MLR", 
   ID.fac = "auto.fix.first")
+
+toc()
 
 ## inspect results:
 # res_cfa_mlr %>% select(model, npar, cfi, cfi.scaled, cfi.robust, rmsea, rmsea.scaled, rmsea.robust, status, status_msg)
@@ -273,6 +278,12 @@ fit_groups_mlr <- function(lavaan_str, model_constraints_base,
 ## fit all constrained models for all grouping variables:
 res_mi_mlr <- NULL
 for (i in seq_along(models_cfa)) {
+  cat(paste0(
+    "Fitting measurement invariance models for CFA base model ", 
+    i, " of ", length(models_cfa), ": ",
+    names(models_cfa)[i], "... ")
+  )
+  tic()
   ## estimate constrained models for determining measurement invariance for a specific factor structure:
   res_this <- purrr::map_dfr(
     i, ~ fit_groups_mlr(models_cfa[[.x]], 
@@ -280,6 +291,7 @@ for (i in seq_along(models_cfa)) {
                         model_constraints_mi = models_cfa_constraints_mi[[i]],
                         data = dat_fa, group_cfa = group_cfa)
   )
+  toc()
   ## add name of model to results data:
   res_this <- tibble(model = names(models_cfa)[i], res_this)
   ## store results:
