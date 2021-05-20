@@ -120,48 +120,49 @@ models_cfa <- list(
 # det(lavInspect(fit_cfa, "cov.lv"))
 # eigen(lavInspect(fit_cfa, "cov.lv"))$values
 
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
+## define constraints for base models
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
 
-## constraints in semtools syntax for base models:
-models_cfa_constraints_base <- list(
-  "zigmond_2f_cor" = "",
-  "razavi_1f" = "",
-  "moorey_2f_cor" = "",
-  "zigmond_mod01_2f_cor" = "",
-  "zigmond_mod02_2f_cor" = "",
-  "dunbar_3f_cor" = "
+## TODO:
+## * move all (or most) checks to some manual check file, 08-*.R (see comments above, for example)
+## * add unconstrained version of models and 
+## * rename constrained: _cnstrnd? _cstrd? _constr?
+## * add ASSERT check that the names of the 3 groups are the same
+
+## create list of empty strings with same names as models_cfa:
+models_cfa_constraints_base <- rep(list(""), 
+                                   length = length(models_cfa)) %>% 
+  set_names(names(models_cfa))
+
+## set constraints in semtools syntax for specific base models:
+models_cfa_constraints_base[["dunbar_3f_cor"]] <- "
       psi.2_1 < sqrt(abs(psi.1_1)) * sqrt(abs(psi.2_2)) * .990   ## constrain cor(f1, f2) to remain < 1
-  ",
-  "dunbar_3f_hier" = "",
-  "friedman_3f_cor" = "",
-  "friedman_3f_ortho" = "",
-  "caci_3f_cor" = "
+  "
+models_cfa_constraints_base[["caci_3f_cor"]] <- "
       psi.3_2 < sqrt(abs(psi.3_3)) * sqrt(abs(psi.2_2)) * .94    ## constraint cor(f3, f2) to remain < .95 (necessary for smaller groups, e.g. tumorart)
-  ",
-  "emons_2f_cor" = ""
-)
+  "
 
-## constraints in semtools syntax for multigroup CFAs
-## (measurement invariance):
-models_cfa_constraints_mi <- list(
-  "zigmond_2f_cor" = "",
-  "razavi_1f" = "",
-  "moorey_2f_cor" = "",
-  "zigmond_mod01_2f_cor" = "",
-  "zigmond_mod02_2f_cor" = "",
-  "dunbar_3f_cor" = "
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
+## define constraints for multigroup CFA models (measurement invariance)
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
+
+## create list of empty strings with same names as models_cfa:
+models_cfa_constraints_mi <- rep(list(""), 
+                                 length = length(models_cfa)) %>% 
+  set_names(names(models_cfa))
+
+## set constraints in semtools syntax for specific multigroup CFAs:
+models_cfa_constraints_mi[["dunbar_3f_cor"]] <- "
       psi.2_1.g1 < sqrt(abs(psi.1_1.g1)) * sqrt(abs(psi.2_2.g1)) * .990   ## constrain cor(f1, f2) to remain < 1 (in group 1)
       psi.2_1.g2 < sqrt(abs(psi.1_1.g2)) * sqrt(abs(psi.2_2.g2)) * .990   ## constrain cor(f1, f2) to remain < 1 (in group 2)
-  ",
-  "dunbar_3f_hier" = "
+  "
+models_cfa_constraints_mi[["dunbar_3f_hier"]] <- "
       psi.1_1.g1 > 0   ## constrain factor variance: needs to be > 1 (in grp 1)
       psi.1_1.g2 > 0   ## constrain factor variance: needs to be > 1 (in grp 2)
-  ",
-  "friedman_3f_cor" = "",
-  "friedman_3f_ortho" = "",
-  "caci_3f_cor" = "
+  "
+models_cfa_constraints_mi[["caci_3f_cor"]] <- "
       psi.3_2.g1 < sqrt(abs(psi.3_3.g1)) * sqrt(abs(psi.2_2.g1)) * .94   ## constrain cor(f3, f2) to remain < .95 (in group 1)
       psi.3_2.g2 < sqrt(abs(psi.3_3.g2)) * sqrt(abs(psi.2_2.g2)) * .94   ## constrain cor(f3, f2) to remain < .95 (in group 2)
-  ",
-  "emons_2f_cor" = ""
-)
+  "
 
