@@ -266,7 +266,8 @@ fit_groups_mlr <- function(lavaan_str, model_constraints_base,
                                       data = data, group = .x, ID.fac = ID.fac)
   )
 }
-# tmp3 <- fit_groups_mlr(models_cfa[[4]], data = dat_fa, group_cfa = group_cfa)
+# wch_model_no <- 4
+# tmp3 <- fit_groups_mlr(models_cfa[[wch_model_no]], models_cfa_constraints_base[[wch_model_no]], models_cfa_constraints_mi[[wch_model_no]], data = dat_fa, group_cfa = group_cfa)
 # tmp3
 
 ## fit all constrained models for all grouping variables:
