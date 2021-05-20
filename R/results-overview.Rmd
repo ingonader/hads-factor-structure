@@ -9,7 +9,7 @@ library(magrittr)
 library(dplyr)
 library(knitr)
 library(kableExtra)
-load("../tmp/results-all_2021-04-26--20-24-12---f25fcea3.Rdata")
+load("../tmp/results-all_2021-05-20--21-55-06---b51ae34e.Rdata")
 ```
 
 
@@ -49,7 +49,7 @@ is_groupmodel_green <- is_groupmodel & (wch_res[["cfi.robust"]] >= 0.95)
 is_invariant <- (wch_res[["cfi_robust_diff"]] > 0.01)
 
 wch_res %>% 
-  select(model, group, grps, grps_n, constraint, npar, contains("cfi")) %>%
+  select(model, group, grps, grps_n, constraint, npar, contains("cfi"), status) %>%
   mutate(across(contains("cfi"), ~ round(.x, 3))) %>%
   kable() %>%
   kable_styling() %>%

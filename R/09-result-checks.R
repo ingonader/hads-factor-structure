@@ -22,12 +22,6 @@ source("./R/setup.R")
 library(lavaan)
 
 ## ========================================================================= ##
-## load data dump from disk
-## ========================================================================= ##
-
-# load(file = file.path(path_tmp, "results-all_2021-04-26--20-24-12---f25fcea3.Rdata"))
-
-## ========================================================================= ##
 ## CFA models
 ## ========================================================================= ##
 
@@ -62,8 +56,8 @@ get_factor_var_summary <- function(fit) {
   ## extract range (of vector or list):
   return(range(fact_var))
 }
-get_factor_var_summary(fit1)
-get_factor_var_summary(fit2)
+# get_factor_var_summary(fit1)
+# get_factor_var_summary(fit2)
 
 get_factor_covar_summary <- function(fit) {
   ## get factor variance-covariance matrix (or list, if MGCFA):
@@ -77,8 +71,8 @@ get_factor_covar_summary <- function(fit) {
   ## and return range of (list of) lower triangles:
   return(range(lowtri, na.rm = TRUE))
 }
-get_factor_covar_summary(fit1)
-get_factor_covar_summary(fit2)
+# get_factor_covar_summary(fit1)
+# get_factor_covar_summary(fit2)
 
 get_error_var_summary <- function(fit) {
   ## get all parameter estimates:
@@ -90,8 +84,8 @@ get_error_var_summary <- function(fit) {
     ## return range:
     {range(.$est, na.rm = TRUE)}
 }
-get_error_var_summary(fit1)
-get_error_var_summary(fit2)
+# get_error_var_summary(fit1)
+# get_error_var_summary(fit2)
 
 # fit <- res_cfa_mlr$fit[[7]]
 # fit <- res_cfa_mlr$fit[[2]]
@@ -113,8 +107,8 @@ get_cor_resid_summary <- function(fit) {
   ## and return range (of list or single cov matrix):
   return(range(cor_resid_cov, na.rm = TRUE))
 }
-get_cor_resid_summary(fit1)
-get_cor_resid_summary(fit2)
+# get_cor_resid_summary(fit1)
+# get_cor_resid_summary(fit2)
 
 extend_cfa_parameter_summary <- function(res_cfa) {
   res_cfa %>% mutate(
@@ -134,16 +128,16 @@ extend_cfa_parameter_summary <- function(res_cfa) {
 ## extend CFA results for MLR estimation:
 res_cfa_mlr_ext <- res_cfa_mlr %>% 
   extend_cfa_parameter_summary()
-res_cfa_mlr_ext %>% select(model, npar, cfi.robust, rmsea.robust, status, 
-                           contains("load_"), contains("fact_"),
-                           contains("error_"), contains("cor_resid_"))
+# res_cfa_mlr_ext %>% select(model, npar, cfi.robust, rmsea.robust, status, 
+#                            contains("load_"), contains("fact_"),
+#                            contains("error_"), contains("cor_resid_"))
 
 ## extend MGCFA (MI) models for MLR estimation:
 res_mi_mlr_ext <- res_mi_mlr %>%
   extend_cfa_parameter_summary()
-res_mi_mlr_ext %>% select(1:5, status, 
-                          contains("load_"), contains("fact_"),
-                          contains("error_"), contains("cor_resid_"))
+# res_mi_mlr_ext %>% select(1:5, status, 
+#                           contains("load_"), contains("fact_"),
+#                           contains("error_"), contains("cor_resid_"))
 
 save.image(file = file.path(path_tmp, "results-all_2021-05-04--21-03-00---f25fcea3---extended.Rdata"))
 

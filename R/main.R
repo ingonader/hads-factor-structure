@@ -25,6 +25,9 @@ source(file.path(path_r, "04-efa.R"))
 ## run CFA:
 source(file.path(path_r, "06b-cfa-mlr-est.R"))
 
+## run model summary checks:
+source(file.path(path_r, "09-result-checks.R"))
+
 ## dump results to disk:
 save.image(construct_filename(path_tmp, "results-all", "Rdata"))
 
