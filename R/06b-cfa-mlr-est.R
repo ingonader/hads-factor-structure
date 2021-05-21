@@ -112,9 +112,9 @@ fit_constrained_mlr <- function(lavaan_str, model_constraints_base,
     paste(collapse = ", ") %>%
     paste0("[", ., "]")
   ## get groups:
-  grps <- names(grps_table)
+  grps_name <- names(grps_table)
   ## get number of groups:
-  n_grps <- length(grps)
+  n_grps <- length(grps_name)
   ## define list of all model definitions:
   models_constrained <- list(
     ## configurational invariance: items load on same factors:
@@ -147,19 +147,19 @@ fit_constrained_mlr <- function(lavaan_str, model_constraints_base,
       paste0(model_constraints_mi)
   )
   ## first, fit model in each group separately:
-  fit_cfa_group <- seq_along(grps) %>% {
+  fit_cfa_group <- seq_along(grps_name) %>% {
     bind_cols(
       group = group,
       grps = n_grps,
       grps_n = grps_n,
-      constraint = paste0("group ", ., ": ", grps[.]),
+      constraint = paste0("grp ", ., ": ", grps_name[.], " (n=", grps_table[.],")"),
       purrr::map_dfr(.,
         ~ get_fit_indices(
           as.character(
             measEq.syntax(lavaan_str, data = data, ID.fac = ID.fac)
           ) %>% 
             paste0(model_constraints_base),
-          data = data %>% filter((!!as.name(group)) == grps[.x]),
+          data = data %>% filter((!!as.name(group)) == grps_name[.x]),
           group = NULL, 
           estimator = "MLR")
       )
