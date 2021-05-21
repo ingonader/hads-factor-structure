@@ -86,10 +86,16 @@ library(semTools)
 ## measurement invariance for specified variables: function definition
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
 
+## TODO:
+## * fix sample size per group (still in incorrect order!)
+
 # ## for debugging:
-# lavaan_str <- models_cfa[[1]]
+# wch_model <- 1
+# lavaan_str <- models_cfa[[wch_model]]
+# model_constraints_base <- models_cfa_constraints_base[[wch_model]]
+# model_constraints_mi <- models_cfa_constraints_mi[[wch_model]]
 # data <- dat_fa
-# group <- "t1_alter_grp2"
+# group <- "tumorart"
 
 ## define function to estimate a grouped model with all levels of constraints:
 fit_constrained_mlr <- function(lavaan_str, model_constraints_base,
