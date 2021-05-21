@@ -139,7 +139,7 @@ res_mi_mlr_ext <- res_mi_mlr %>%
 #                           contains("load_"), contains("fact_"),
 #                           contains("error_"), contains("cor_resid_"))
 
-save.image(file = file.path(path_tmp, "results-all_2021-05-04--21-03-00---f25fcea3---extended.Rdata"))
+# save.image(file = file.path(path_tmp, "results-all_2021-05-04--21-03-00---f25fcea3---extended.Rdata"))
 
 
   
