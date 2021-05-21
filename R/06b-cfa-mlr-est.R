@@ -25,24 +25,6 @@ library(lavaan)
 ## confirmatory factor analysis
 ## ========================================================================= ##
 
-# ## estimate one model of the list above:
-# wch_model <- "dunbar_3f_cor"  ## covariance matrix is not positive definite (due to sampling error), but model estimation runs fine
-# wch_model <- 1  ## covariance matrix is not positive definite (due to sampling error), but model estimation runs fine
-# fit_cfa <- cfa(models_cfa[[wch_model]], data = dat_fa, estimator = "MLR")
-# fit_cfa_summary <- summary(fit_cfa, standardized = TRUE, fit.measures = TRUE)
-# fit_cfa_summary$FIT
-# fit_cfa %>% inspect(what = "cov.lv")
-# bind_rows(fit_cfa_summary$FIT)
-
-# ## get fit indices of all models:
-# ## (without using semTools syntax):
-# res_cfa_mlr <- models_cfa %>% {
-#   bind_cols(
-#     model = names(.),
-#     purrr::map_dfr(., get_fit_indices, dat_fa, estimator = "MLR")
-#     )
-# }
-
 ## get fit indices of all models using semTools syntax:
 get_fitindices_of_model_list <- function(models_cfa, model_constraints, 
                                          data, estimator, ID.fac = "auto.fix.first", ...) {
@@ -221,28 +203,7 @@ fit_constrained_mlr <- function(lavaan_str, model_constraints_base,
 }
 # debug(fit_constrained_mlr)
 # undebug(fit_constrained_mlr)
-# wch_model <- "dunbar_3f_cor_constr"
-# fit_constrained_mlr(models_cfa[[wch_model]],
-#                     model_constraints_base = models_cfa_constraints_base[[wch_model]],
-#                     model_constraints_mi = models_cfa_constraints_mi[[wch_model]],
-#                     data = dat_fa, group = "tumorart")
-# 
-# wch_model <- "dunbar_3f_hier"
-# models_cfa[[wch_model]] %>% 
-#   measEq.syntax(data = dat_fa, ID.fac = "auto.fix.first") %>% 
-#   as.character() %>% cat()
-# tmp <- fit_constrained_mlr(
-#   models_cfa[[wch_model]],
-#   model_constraints_base = "
-#   ",
-#   model_constraints_mi = "
-#       psi.1_1.g1 > 0   ## constrain factor variance: needs to be > 1 (in grp 1)
-#       psi.1_1.g2 > 0   ## constrain factor variance: needs to be > 1 (in grp 2)
-#   ",
-#   data = dat_fa, group = "tumorart"
-# )
-# tmp$status
-# tmp$status_msg
+
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
 ## measurement invariance for specified variables
@@ -358,72 +319,4 @@ plot_mi_mlr
 
 ggsave(filename = file.path(path_plot, "fig-mi-02-mlr.jpg"), width = 8, height = 5, scale = 1.5, dpi = 600)
 
-
-## ========================================================================= ##
-## experimentation
-## ========================================================================= ##
-
-## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
-## try different model specifications
-## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
-
-# mod_tmp <- "## Dunbar et al., 2000, hierarchical factors, item 7 loads to 2 factors
-#       f1 =~ i_03 + i_09 + i_13                                     ## autonomic anxiety
-#       f2 =~ i_01 + i_05 + i_07 + i_11                              ## neg. affectivigy (NA)
-#       f3 =~ i_02 + i_04 + i_06 + i_07 + i_08 + i_10 + i_12 + i_14  ## anhedonicstic depression
-#       f2 =~ f1 + f3     ## NA explains AA and AD
-#       f1 ~~ 0*f3  
-# "
-# mod_tmp <- "## Dunbar et al., 2000, hierarchical factors, item 7 loads to 2 factors
-#       f1 =~ i_03 + i_09 + i_13                                     ## autonomic anxiety
-#       f2 =~ i_01 + i_05 + i_07 + i_11                              ## neg. affectivigy (NA)
-#       f3 =~ i_02 + i_04 + i_06 + i_07 + i_08 + i_10 + i_12 + i_14  ## anhedonicstic depression
-#       f1 ~ f2
-#       f3 ~ f2     ## NA explains AA and AD
-#       f1 ~~ 0*f3  
-# "
-# fit_cfa <- cfa(mod_tmp, data = dat_fa, estimator = "MLR", std.lv = TRUE)
-# fit_cfa %>% inspect(what = "cov.lv")
-# fit_cfa %>% summary()
-# 
-# ## estimate one model with constraints:
-# tmp_model_def <- models_cfa[["dunbar_3f_cor"]]
-# tmp_model_def <- paste0(
-#   models_cfa[["dunbar_3f_cor"]],
-#   "f1 ~~ c01 * f2",  "\n",
-#   "c01 < .99", "\n"
-# )
-# cat(tmp_model_def)
-# #fit_cfa <- cfa(tmp_model_def, data = dat_fa, estimator = "MLR")
-# fit_ind <- get_fit_indices(tmp_model_def, data = dat_fa, estimator = "MLR")
-# fit_ind
-# fit_ind$status
-# fit_cfa <- fit_ind$fit[[1]]
-# fit_cfa %>% inspect(what = "cov.lv")
-# fit_cfa %>% inspect(what = "cov.lv") %>% det()
-
-## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
-## export 3-factor model with constraint but no additional specification
-## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
-
-mod_exp <- "
-      ## Dunbar et al., 2000, correlated factors, item 7 loads to 2 factors
-      f1 =~ i_03 + i_09 + i_13                                     ## autonomic anxiety
-      f2 =~ i_01 + i_05 + i_07 + i_11                              ## neg. affectivigy (NA)
-      f3 =~ i_02 + i_04 + i_06 + i_07 + i_08 + i_10 + i_12 + i_14  ## anhedonicstic depression
-      f1 ~~ c01 * f2     ## constrain covariance (== correlation, if std.lv = TRUE) of f1 and f2...
-      c01 < .995          ## .. to remain smaller than one, to avoid heywood case
-"
-fit_cfa <- cfa(mod_exp, data = dat_fa, estimator = "MLR", std.lv = TRUE)
-# summary(fit_cfa, fit.measures = TRUE)
-# fit_cfa %>% inspect(what = "cov.lv")
-
-## construct dataset for export:
-dat_export <- as_tibble(lavPredict(fit_cfa)) %>%
-  bind_cols(
-    dat_fa[groups_cfa]
-  )
-
-save(mod_exp, fit_cfa, groups_cfa, dat_export,
-     file = file.path(path_tmp, "dunbar_3f_cor_constrained.Rdata"))
 
