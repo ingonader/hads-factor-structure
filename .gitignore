@@ -8,8 +8,8 @@ data/*
 plot/*
 
 ## html output:
-R/results-overview.html
-R/results-checks.html
+R/results-overview*.html
+R/results-checks*.html
 
 ## temporary folder:
 tmp/*
