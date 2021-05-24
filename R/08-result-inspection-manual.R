@@ -31,6 +31,21 @@ load(file = file.path(path_tmp, "results-all_2021-05-21--21-37-38---e91be763.Rda
 ## CFA models
 ## ========================================================================= ##
 
+## inspect results:
+res_cfa_mlr %>% select(model, npar, cfi, cfi.scaled, cfi.robust, rmsea, rmsea.scaled, rmsea.robust, status, status_msg)
+res_cfa_mlr %>% select(model, npar, cfi.robust, rmsea.robust, status)
+res_cfa_mlr %>% select(model, npar, cfi.robust, rmsea.robust, status) %>% arrange(model)
+
+#' robust RMSEA and CFI values are computed following 
+#' Brosseau-Liard, P. E., Savalei, V., and Li, L. (2012), and 
+#' Brosseau-Liard, P. E. and Savalei, V. (2014); 
+#' in the output of fitMeasures(), the 'new' ones are called cfi.robust and rmsea.robust, 
+#' (while the 'old' ones are called cfi.scaled and rmsea.scaled)
+#' -- Yves Rosseel, Sept 2016
+
+## check warnings:
+res_cfa_mlr %>% filter(status != "success") %>% pull(status_msg) %>% cat()
+
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
 ## re-estimate individual models via basic lavaan estimation
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
@@ -50,6 +65,7 @@ fit_cfa %>% inspect(what = "cov.lv") %>% det()
 
 wch_model <- "dunbar_3f_cor"
 #wch_model <- "caci_3f_cor"
+#wch_model <- "dunbar_3f_hier_constr"
 
 tmp <- get_fitindices_of_model_list(
   models_cfa[wch_model], 
@@ -131,12 +147,52 @@ res_cfa_mlr$fit[[wch_model]] %>%
 ## Measurement Invariance
 ## ========================================================================= ##
 
+## check results:
+res_mi_mlr %>% select(model, group, grps, grps_n, constraint, npar, contains("cfi"), status) %>%
+  mutate(across(contains("cfi"), ~ round(.x, 3)))
+
+## check warnings:
+res_mi_mlr %>% filter(status != "success") %>%
+  group_by(status, model, group) %>%
+  count() %>%
+  select(n, everything())
+res_mi_mlr %>% filter(status != "success") %>% pull(status_msg) %>% unique() %>% cat()
+res_mi_mlr %>% filter(status != "success") %>%
+  mutate(status_msg = status_msg %>%
+           stringr::str_replace_all(".*lavaan WARNING: ", "") %>%
+           stringr::str_replace_all('use lavInspect.*$', "") %>%
+           stringr::str_replace_all("[[:blank:][:cntrl:]]+", " ")) %>%
+  group_by(model, group, status_msg) %>% count()
+
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
+## inspect one of the fitted models:
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
+
+res_mi_mlr %>% 
+  filter(
+    model == "dunbar_3f_hier_constr",
+    group == "t1_geschlecht"
+  ) %>%
+  select(model, group, grps, grps_n, constraint, npar, contains("cfi"), status)
+
+fit_cfa <- res_mi_mlr %>% 
+  filter(
+    model == "dunbar_3f_hier_constr",
+    group == "t1_geschlecht",
+    constraint == "strict"
+  ) %>%
+  pull(fit) %>% .[[1]]
+
+summary(fit_cfa)
+
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
 ## re-estimate individual MG-CFA models
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
 
-#wch_model <- "dunbar_3f_cor_constr"
-wch_model <- "dunbar_3f_cor"
+wch_model <- "dunbar_3f_cor_constr"
+#wch_model <- "dunbar_3f_cor"
+#wch_model <- "dunbar_3f_hier_constr"
+
 tmp <- fit_constrained_mlr(
   models_cfa[[wch_model]],
   model_constraints_base = models_cfa_constraints_base[[wch_model]],
@@ -167,8 +223,6 @@ covmat["f1", "f3"] / (sqrt(covmat["f1", "f1"]) * sqrt(covmat["f3", "f3"]))
 covmat["f2", "f3"] / (sqrt(covmat["f2", "f2"]) * sqrt(covmat["f3", "f3"]))
 
 
-
-
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
 ## re-estimate individual MG-CFA models with different constraints
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
@@ -187,10 +241,10 @@ tmp <- fit_constrained_mlr(
   model_constraints_base = "
   ",
   model_constraints_mi = "
-      psi.1_1.g1 > 0   ## constrain factor variance: needs to be > 1 (in grp 1)
-      psi.1_1.g2 > 0   ## constrain factor variance: needs to be > 1 (in grp 2)
+      psi.1_1.g1 > 0.01   ## constrain factor variance: needs to be > 1 (in grp 1)
+      psi.1_1.g2 > 0.01   ## constrain factor variance: needs to be > 1 (in grp 2)
   ",
-  data = dat_fa, group = "tumorart"
+  data = dat_fa, group = "t1_geschlecht"
 )
 tmp$status
 tmp$status_msg
