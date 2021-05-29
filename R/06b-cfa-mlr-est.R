@@ -100,7 +100,7 @@ library(semTools)
 ## define function to estimate a grouped model with all levels of constraints:
 fit_constrained_mlr <- function(lavaan_str, model_constraints_base,
                                 model_constraints_mi,
-                                data, group, ID.fac = "auto.fix.first") {
+                                data, group, ID.fac = "std.lv") {
   ## remove missings in grouping variable:
   group_miss <- is.na(data[[group]])
   data <- data[!group_miss, ]
@@ -230,7 +230,7 @@ groups_cfa <- c(
 ## define function to fit constrained models for all grouping variables in one specific model:
 fit_groups_mlr <- function(lavaan_str, model_constraints_base,
                            model_constraints_mi, 
-                           data, group_cfa, ID.fac = "auto.fix.first") {
+                           data, group_cfa, ID.fac = "std.lv") {
   purrr::map_dfr(
     groups_cfa, ~ fit_constrained_mlr(lavaan_str, 
                                       model_constraints_base = model_constraints_base,
@@ -256,7 +256,8 @@ for (i in seq_along(models_cfa)) {
     i, ~ fit_groups_mlr(models_cfa[[.x]], 
                         model_constraints_base = models_cfa_constraints_base[[i]],
                         model_constraints_mi = models_cfa_constraints_mi[[i]],
-                        data = dat_fa, group_cfa = group_cfa)
+                        data = dat_fa, group_cfa = group_cfa,
+                        ID.fac = "std.lv")
   )
   toc()
   ## add name of model to results data:
