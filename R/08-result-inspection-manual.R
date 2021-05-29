@@ -241,14 +241,15 @@ tmp <- fit_constrained_mlr(
   model_constraints_base = "
   ",
   model_constraints_mi = "
-      psi.1_1.g1 > 0.01   ## constrain factor variance: needs to be > 1 (in grp 1)
-      psi.1_1.g2 > 0.01   ## constrain factor variance: needs to be > 1 (in grp 2)
+      psi.1_1.g1 > 0.0000001   ## constrain factor variance: needs to be > 1 (in grp 1)
+      psi.1_1.g2 > 0.0000001   ## constrain factor variance: needs to be > 1 (in grp 2)
   ",
   data = dat_fa, group = "t1_geschlecht"
 )
 tmp$status
 tmp$status_msg
-
+fit_cfa <- tmp$fit[[6]]
+fit_cfa %>% summary()
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
 ## check warnings
