@@ -89,8 +89,8 @@ toc()
 ## * fix sample size per group (still in incorrect order!)
 
 # ## for debugging:
-# wch_model <- 1
-# lavaan_str <- models_cfa[[wch_model]]
+# wch_model <- 6
+# lavaan_str <- models_cfa[[wch_model]]; print(names(models_cfa)[wch_model])
 # model_constraints_base <- models_cfa_constraints_base[[wch_model]]
 # model_constraints_mi <- models_cfa_constraints_mi[[wch_model]]
 # data <- dat_fa
