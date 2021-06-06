@@ -387,6 +387,13 @@
       "Repository": "CRAN",
       "Hash": "4e331c6d2ed36e62b25572ab30a547d6"
     },
+    "flextable": {
+      "Package": "flextable",
+      "Version": "0.6.6",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "a0782b2f09ddde646855880f1622f0ed"
+    },
     "forcats": {
       "Package": "forcats",
       "Version": "0.5.1",
@@ -407,6 +414,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "0981595682281f6931fb63c0b442354c"
+    },
+    "gdtools": {
+      "Package": "gdtools",
+      "Version": "0.2.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "12a524de5a491ff39debb9311fc0763f"
     },
     "generics": {
       "Package": "generics",
@@ -750,6 +764,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "df58958f293b166e4ab885ebcad90e02"
+    },
+    "officer": {
+      "Package": "officer",
+      "Version": "0.3.18",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "da173b709a249ee1a0d122000c98cf92"
     },
     "openssl": {
       "Package": "openssl",
@@ -1149,6 +1170,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "c3ad47dc6da0751f18ed53c4613e3ac7"
+    },
+    "uuid": {
+      "Package": "uuid",
+      "Version": "0.1-4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "e4169eb989a5d03ccb6b628cad1b1b50"
     },
     "vcd": {
       "Package": "vcd",
