@@ -29,6 +29,7 @@ path_dat <- file.path(path_raw, "data")
 path_r <- file.path(path_raw, "R")
 path_tmp <- file.path(path_raw, "tmp")
 path_plot <- file.path(path_raw, "plot")
+path_ms <- "/Users/in186000/onedrive/HADS_Psychometrie/results"
 
 
 ## ========================================================================= ##
