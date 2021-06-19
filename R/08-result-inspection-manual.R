@@ -168,12 +168,17 @@ res_mi_mlr %>% filter(status != "success") %>%
 ## inspect one of the fitted models:
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
 
-res_mi_mlr %>% 
+tmp <- res_mi_mlr %>% 
   filter(
-    model == "dunbar_3f_hier_constr",
-    group == "t1_geschlecht"
+    model == "dunbar_3f_cor_constr"#,
+    #group == "t1_geschlecht"
   ) %>%
-  select(model, group, grps, grps_n, constraint, npar, contains("cfi"), status)
+  select(model, group, grps, grps_n, constraint, npar, contains("cfi"), status, status_msg)
+tmp
+View(tmp)
+
+tmp %>%
+  pull(status_msg) %>% cat()
 
 fit_cfa <- res_mi_mlr %>% 
   filter(
@@ -228,11 +233,11 @@ covmat["f2", "f3"] / (sqrt(covmat["f2", "f2"]) * sqrt(covmat["f3", "f3"]))
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
 
 ## select model:
-wch_model <- "dunbar_3f_hier"
+wch_model <- "dunbar_3f_cor"
 
 ## add semtools syntax:
 models_cfa[[wch_model]] %>%
-  measEq.syntax(data = dat_fa, ID.fac = "auto.fix.first") %>%
+  measEq.syntax(data = dat_fa, ID.fac = "std.lv") %>%
   as.character() %>% cat()
 
 ## estimate model with different constraints (for experimentation):
@@ -241,8 +246,8 @@ tmp <- fit_constrained_mlr(
   model_constraints_base = "
   ",
   model_constraints_mi = "
-      psi.1_1.g1 > 0.0000001   ## constrain factor variance: needs to be > 1 (in grp 1)
-      psi.1_1.g2 > 0.0000001   ## constrain factor variance: needs to be > 1 (in grp 2)
+      psi.2_1.g1 < sqrt(abs(psi.1_1.g1)) * sqrt(abs(psi.2_2.g1)) * .990   ## constrain cor(f1, f2) to remain < 1 (in group 1)
+      psi.2_1.g2 < sqrt(abs(psi.1_1.g2)) * sqrt(abs(psi.2_2.g2)) * .990   ## constrain cor(f1, f2) to remain < 1 (in group 2)
   ",
   data = dat_fa, group = "t1_geschlecht"
 )
