@@ -34,6 +34,23 @@ set_flextable_defaults(
   big.mark = ""
 )
 
+construct_modelname <- function(x) {
+  plyr::revalue(x,
+                c(
+                  "zigmond_2f_cor" = "Zigmond & Snaith (1983)",
+                  "razavi_1f" = "Razavi et al. (1990)",
+                  "moorey_2f_cor" = "Moorey et al. (1991)",
+                  "zigmond_mod01_2f_cor" = "Zigmond & Snaith (1983; 13 items)",
+                  "zigmond_mod02_2f_cor" = "Zigmond & Snaith (1983; 12 items)",
+                  "dunbar_3f_cor" = "Dunbar et al. (2000)",
+                  "friedman_3f_cor" = "Friedman et al. (2001)",
+                  "caci_3f_cor" = "Caci et al. (2003)",
+                  "emons_2f_cor" = "Emons et al. (2012)",
+                  "dunbar_3f_cor_constr" = "Dunbar et al. (2000; constr.)",
+                  "caci_3f_cor_constr" = "Caci et al. (2003; constr.)"
+                )
+  )
+}
 
 ## ========================================================================= ##
 ## CFA model results
@@ -54,6 +71,7 @@ res_cfa_ms <- res_cfa_mlr %>%
     cfi.robust, 
     rmsea.robust) %>% #, status)
   filter(!(model %in% c("dunbar_3f_cor", "caci_3f_cor"))) %>%
+  mutate(model = construct_modelname(model)) %>%
   mutate_at(vars(contains("chisq")), ~ round(.x, 1)) %>%
   mutate_at(vars(contains("cfi"), contains("rmsea")), ~ round(.x, 3))
 res_cfa_ms
