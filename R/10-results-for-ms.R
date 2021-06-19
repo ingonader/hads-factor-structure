@@ -105,7 +105,7 @@ ft_res_cfa <- res_cfa_ms %>%
   compose(
     i = 1, j = "chisq.scaled", part = "header",
     value = as_paragraph(
-      as_chunk("c", props = fp_text(font.family = "Symbol")),  ## Chi
+      as_i("\u03C7"), # as_chunk("c", props = fp_text(font.family = "Symbol")),  ## Chi  ## Segoe UI Symbol
       as_sup("2"),
       as_sub("scaled")
     )
@@ -116,6 +116,8 @@ ft_res_cfa <- res_cfa_ms %>%
       as_i("df")
       #as_sub("scaled")
     )
-  )
+  ) %>% 
+  autofit()
 save_as_docx(ft_res_cfa, path = file.path(path_tmp, "flextable.docx"))
+save_as_docx(ft_res_cfa, path = file.path(path_ms, "flextable.docx"))
 
