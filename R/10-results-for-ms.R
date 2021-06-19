@@ -121,3 +121,23 @@ ft_res_cfa <- res_cfa_ms %>%
 save_as_docx(ft_res_cfa, path = file.path(path_tmp, "flextable.docx"))
 save_as_docx(ft_res_cfa, path = file.path(path_ms, "flextable.docx"))
 
+
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
+## correlations between factors
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
+
+## correlation matrix of a single model:
+lavPredict(res_cfa_mlr$fit[[1]]) %>% cor()
+
+## correlation matrix of all models:
+purrr::map(res_cfa_mlr$fit, ~ cor(lavPredict(.x))) %>% 
+  setNames(res_cfa_mlr$model)
+
+## max correlation of all models:
+purrr::map(res_cfa_mlr$fit, function(.x) {
+  cormat <- cor(lavPredict(.x))
+  ret <- max(cormat[lower.tri(cormat)])
+  return(ret)
+}) %>% 
+  setNames(res_cfa_mlr$model) %>%
+  as_tibble()
