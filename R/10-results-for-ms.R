@@ -83,9 +83,7 @@ res_cfa_ms
 ## create flextable and save to file:
 ft_res_cfa <- res_cfa_ms %>% 
   rename(
-    "Model" = "model",
-    "CFI" = "cfi.robust",
-    "RMSEA" = "rmsea.robust"
+    "Model" = "model"
   ) %>%
   flextable() %>%
   # compose(
@@ -117,9 +115,23 @@ ft_res_cfa <- res_cfa_ms %>%
       #as_sub("scaled")
     )
   ) %>% 
+  compose(
+    i = 1, j = "cfi.robust", part = "header",
+    value = as_paragraph(
+      "CFI",
+      as_sub("robust")
+    )
+  ) %>% 
+  compose(
+    i = 1, j = "rmsea.robust", part = "header",
+    value = as_paragraph(
+      "RMSEA",
+      as_sub("robust")
+    )
+  ) %>% 
   autofit()
-save_as_docx(ft_res_cfa, path = file.path(path_tmp, "flextable.docx"))
-save_as_docx(ft_res_cfa, path = file.path(path_ms, "flextable.docx"))
+save_as_docx(ft_res_cfa, path = file.path(path_tmp, "table-cfa-model-fit.docx"))
+save_as_docx(ft_res_cfa, path = file.path(path_ms, "table-cfa-model-fit.docx"))
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
 ## estimation problems for some 3-factor models
