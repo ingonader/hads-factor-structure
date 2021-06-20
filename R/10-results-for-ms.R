@@ -121,6 +121,41 @@ ft_res_cfa <- res_cfa_ms %>%
 save_as_docx(ft_res_cfa, path = file.path(path_tmp, "flextable.docx"))
 save_as_docx(ft_res_cfa, path = file.path(path_ms, "flextable.docx"))
 
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
+## estimation problems for some 3-factor models
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
+
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
+## dunbar_3f_cor
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
+
+## CFA estimation in full sample:
+res_cfa_mlr %>% 
+  filter(model == "dunbar_3f_cor") %>%
+  pull(status_msg)
+
+res_cfa_mlr %>% 
+  filter(model == "dunbar_3f_cor") %>%
+  pull(fit) %>%
+  .[[1]] %>%
+  summary()
+
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
+## caci_3f_cor
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
+
+## CFA estimation in full sample:
+
+res_mi_mlr %>% 
+  filter(model == "caci_3f_cor") %>%
+  select(model, group, grps, grps_n, constraint, status, status_msg) %>%
+  print(n = 30)
+
+res_cfa_mlr %>% 
+  filter(model == "caci_3f_cor") %>%
+  pull(fit) %>%
+  .[[1]] %>%
+  summary()
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
 ## correlations between factors
@@ -130,7 +165,7 @@ save_as_docx(ft_res_cfa, path = file.path(path_ms, "flextable.docx"))
 lavPredict(res_cfa_mlr$fit[[1]]) %>% cor()
 
 ## correlation matrix of all models:
-purrr::map(res_cfa_mlr$fit, ~ cor(lavPredict(.x))) %>% 
+purrr::map(res_cfa_mlr$fit, ~ round(cor(lavPredict(.x)), 3)) %>% 
   setNames(res_cfa_mlr$model)
 
 ## max correlation of all models:
@@ -141,3 +176,154 @@ purrr::map(res_cfa_mlr$fit, function(.x) {
 }) %>% 
   setNames(res_cfa_mlr$model) %>%
   as_tibble()
+
+## ========================================================================= ##
+## measurement invariance
+## ========================================================================= ##
+
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
+## MI tables
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
+
+## create tibble with relevant results:
+res_mi_ms <- res_mi_mlr %>% 
+  select(model, 
+         group, 
+         constraint, 
+         #npar, 
+         chisq.scaled, 
+         df.scaled, 
+         cfi.robust, 
+         cfi_robust_diff) %>%
+  filter(!(model %in% c("dunbar_3f_cor", "caci_3f_cor"))) %>%
+  mutate(model = construct_modelname(model)) %>%
+  mutate_at(vars(contains("chisq")), ~ round(.x, 1)) %>%
+  mutate_at(vars(contains("cfi")), ~ round(.x, 3))
+
+## create flextable and save to file:
+ft_res_mi <- res_mi_ms %>%
+  ## change contents of columns: ------------------------------------------- ##
+  mutate(
+    ## remove duplicate entries within columns:
+    model = if_else(model != lag(model), model, "", model),
+    group = if_else(group != lag(group), group, "", group),
+    ## change group column:
+    group = group %>% stringr::str_replace_all(
+      "t1_geschlecht", "Sex"
+      ) %>%
+      stringr::str_replace_all(
+        "t1_alter_grp2", "Age"
+      ) %>%
+      stringr::str_replace_all(
+        "t1_datum_grp2", "Time of response"
+      ) %>%
+      stringr::str_replace_all(
+        "tumorart", "Tumor type"
+      ),
+    ## change constraint column:
+    constraint = constraint %>% stringr::str_replace_all(
+        "^grp ", "G"
+      ) %>%
+      stringr::str_replace_all(
+        "männlich", "men"
+      ) %>%
+      stringr::str_replace_all(
+        "weiblich", "women"
+      ) %>%
+      stringr::str_replace_all(
+        "solider Tumor", "solid"
+      ) %>%
+      stringr::str_replace_all(
+        "hämatologischer Tumor", "haematological"
+      ) %>%
+      stringr::str_to_sentence()
+  ) %>%
+  ## rename columns (part 1): ---------------------------------------------- ##
+  rename(
+    "Model" = "model",
+    "Group" = "group",
+    "Constraint" = "constraint"
+  ) %>%
+  flextable() %>%
+  ## rename columns (part 2): ---------------------------------------------- ##
+  compose(
+    i = 1, j = "chisq.scaled", part = "header",
+    value = as_paragraph(
+      as_i("\u03C7"), ## Chi
+      as_sup("2"),
+      as_sub("scaled")
+    )
+  ) %>%
+  compose(
+    i = 1, j = "df.scaled", part = "header",
+    value = as_paragraph(
+      as_i("df")
+      #as_sub("scaled")
+    )
+  ) %>%   compose(
+    i = 1, j = "cfi_robust_diff", part = "header",
+    value = as_paragraph(
+      "\u0394",  ## delta
+      "CFI",
+      as_sub("robust")
+    )
+  ) %>%   compose(
+    i = 1, j = "cfi.robust", part = "header",
+    value = as_paragraph(
+      "CFI",
+      as_sub("robust")
+    )
+  ) %>% 
+  autofit()
+save_as_docx(ft_res_mi, path = file.path(path_tmp, "table-measurement-invariance.docx"))
+#save_as_docx(ft_res_mi, path = file.path(path_ms, "table-measurement-invariance.docx"))
+
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
+## stacked bar plot of delta-CFIs
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
+
+## define colors:
+cbp1 <- c("#999999", "#E69F00", "#56B4E9", "#009E73",
+          "#F0E442", "#0072B2", "#D55E00", "#CC79A7")[1:4]
+
+## create plotting data:
+dat_plot <- res_mi_mlr %>%
+  filter(constraint %in% c("metric", "scalar", "strict")) %>%
+  filter(!(model %in% c("dunbar_3f_cor", "caci_3f_cor"))) %>%
+  mutate(model = construct_modelname(model))
+  
+
+## plot delta CFI:
+plot_mi_mlr <- dat_plot %>%
+  ggplot(aes(x = forcats::fct_relevel(constraint,
+                                      "metric", 
+                                      "scalar", 
+                                      "strict"),
+             y = cfi_robust_diff, 
+             color = group,
+             fill = group, 
+             group = group)) + 
+  geom_bar(position="dodge", stat="identity", width = .4) +
+  geom_hline(yintercept = -0.01, linetype = "dashed", color = "darkgrey", alpha = .8) + 
+  scale_fill_manual(
+    name = "Grouping Variable",
+    breaks = c("t1_alter_grp2", "t1_datum_grp2", "t1_geschlecht", "tumorart"),
+    labels = c("Age", "Time of reponse", "Sex", "Tumor type"),
+    values = cbp1
+  ) +
+  scale_color_manual(
+    name = "Grouping Variable",
+    breaks = c("t1_alter_grp2", "t1_datum_grp2", "t1_geschlecht", "tumorart"),
+    labels = c("Age", "Time of reponse", "Sex", "Tumor type"),
+    values = cbp1
+    
+  ) +
+  facet_wrap(vars(model)) +
+  labs(
+    x = "",
+    y = expression(Delta*"CFI (robust)")
+  ) +
+  theme_classic()
+plot_mi_mlr
+
+ggsave(filename = file.path(path_plot, "fig-mi-02-mlr.jpg"), width = 8, height = 5, scale = 1.5, dpi = 600)
