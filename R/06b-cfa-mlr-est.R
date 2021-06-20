@@ -323,6 +323,6 @@ plot_mi_mlr <- dat_plot %>%
   theme_light()
 plot_mi_mlr
 
-ggsave(filename = file.path(path_plot, "fig-mi-02-mlr.jpg"), width = 8, height = 5, scale = 1.5, dpi = 600)
+ggsave(filename = file.path(path_plot, "fig-mi-02-mlr-all.jpg"), width = 8, height = 5, scale = 1.5, dpi = 600)
 
 
