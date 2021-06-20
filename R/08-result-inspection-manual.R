@@ -332,34 +332,6 @@ tmp$fit[[wch_tmp]] %>% modificationIndices() %>% arrange(desc(mi)) %>% head(n = 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
 
 ## re-fit specific model for all groups:
-mod_refit <- "
-      ## Dunbar et al., 2000, correlated factors, item 7 loads to 2 factors
-      f1 =~ i_03 + i_09 + i_13                                     ## autonomic anxiety
-      f2 =~ i_01 + i_05 + i_07 + i_11                              ## neg. affectivigy (NA)
-      f3 =~ i_02 + i_04 + i_06 + i_07 + i_08 + i_10 + i_12 + i_14  ## anhedonicstic depression
-      f1 ~~ var_f1 * f1  ## introduce parameter for variance of factor 1
-      f2 ~~ var_f2 * f2  ## introduce parameter for variance of factor 2
-      f1 ~~ c01 * f2                  ## constrain correlation of f1 and f2...
-      c01 < sqrt(var_f1) * sqrt(var_f2) * .990    ## .. to remain smaller than one, to avoid heywood case
-"
-# mod_refit_grp <- "
-#       ## Dunbar et al., 2000, correlated factors, item 7 loads to 2 factors
-#       f1 =~ i_03 + i_09 + i_13                                     ## autonomic anxiety
-#       f2 =~ i_01 + i_05 + i_07 + i_11                              ## neg. affectivigy (NA)
-#       f3 =~ i_02 + i_04 + i_06 + i_07 + i_08 + i_10 + i_12 + i_14  ## anhedonicstic depression
-#       f1 ~~ c(g1_var_f1, g2_var_f1) * f1  ## introduce parameter for variance of factor 1
-#       f2 ~~ c(g1_var_f2, g2_var_f2) * f2  ## introduce parameter for variance of factor 2
-#       f1 ~~ c(g1_c01, g2_c01) * f2                  ## constrain correlation of f1 and f2...
-#       g1_c01 < sqrt(g1_var_f1) * sqrt(g1_var_f2) * .990    ## .. to remain smaller than one, to avoid heywood case
-#       g2_c01 < sqrt(g2_var_f1) * sqrt(g2_var_f2) * .990    ## .. to remain smaller than one, to avoid heywood case
-# "
-# mod_constraints_grp <- "
-#       f1 ~~ c(g1_var_f1, g2_var_f1) * f1  ## introduce parameter for variance of factor 1
-#       f2 ~~ c(g1_var_f2, g2_var_f2) * f2  ## introduce parameter for variance of factor 2
-#       f1 ~~ c(g1_c01, g2_c01) * f2                  ## constrain correlation of f1 and f2...
-#       g1_c01 < sqrt(g1_var_f1) * sqrt(g1_var_f2) * .990    ## .. to remain smaller than one, to avoid heywood case
-#       g2_c01 < sqrt(g2_var_f1) * sqrt(g2_var_f2) * .990    ## .. to remain smaller than one, to avoid heywood case
-# "
 group <- groups_cfa[1]
 ## raw model without constraints:
 mod_refit_raw <- "
@@ -376,7 +348,7 @@ mod_refit_constraints_grp_semtools <- "
 ## add semtools syntax to raw model:
 mod_refit_grp <- mod_refit_raw %>%
   measEq.syntax(data = dat_fa, group = group,
-                ID.fac = "auto.fix.first",
+                ID.fac = "std.lv",
                 group.equal = c("configurational")) %>%
   as.character()
 ## ad constraints:
@@ -387,7 +359,7 @@ cat(mod_refit_grp)
 #' NOTE: c01 < .990 seems to be enough for groupwise models
 
 ## fit one model:
-fit_cfa <- cfa(mod_refit, data = dat_fa, estimator = "MLR", std.lv = FALSE)
+#fit_cfa <- cfa(mod_refit, data = dat_fa, estimator = "MLR", std.lv = FALSE)
 fit_cfa <- cfa(mod_refit_grp, data = dat_fa, estimator = "MLR", group = group, std.lv = FALSE)
 summary(fit_cfa, fit.measures = TRUE)
 fit_cfa %>% inspect(what = "cov.lv")
