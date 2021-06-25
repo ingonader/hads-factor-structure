@@ -288,7 +288,7 @@ ft_res_mi <- res_mi_ms %>%
   ) %>% 
   autofit()
 save_as_docx(ft_res_mi, path = file.path(path_tmp, "table-measurement-invariance.docx"))
-#save_as_docx(ft_res_mi, path = file.path(path_ms, "table-measurement-invariance.docx"))
+save_as_docx(ft_res_mi, path = file.path(path_ms, "table-measurement-invariance.docx"))
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
 ## stacked bar plot of delta-CFIs
