@@ -168,24 +168,26 @@ dat_all <- dat_all %>% {mutate(.,
   miss_item_hads = is.na(.[varnames_item_hads]) %>% rowSums()
 )}
 
-
 ## ========================================================================= ##
 ## exclude participants
 ## ========================================================================= ##
 
-## exclude all non-responders (participants that have no item scores):
+## exclude early years with almost no participants (2011, 2012)
+dat_all <- dat_all %>%
+  filter((yr >= 2013) | is.na(yr))
+
+## exclude all non-responders (participants that have no item scores,
+## i.e., keep all with at least one item response):
 dat_all <- dat_all %>%
   filter(miss_item_hads < 14)
 nrow(dat_all)
 
+#dat_all %>% filter((yr >= 2013) | is.na(yr)) %>% nrow()
+#dat_all %>% filter((yr >= 2013)) %>% nrow()
+
 ## exclude responders that have missing values:
 dat_fa <- dat_all %>%
   filter(miss_item_hads == 0)
-nrow(dat_fa)
-
-## exclude early years with almost no participants (2011, 2012)
-dat_fa <- dat_fa %>%
-  filter((yr >= 2013) | is.na(yr))
 nrow(dat_fa)
 
 ## ========================================================================= ##
