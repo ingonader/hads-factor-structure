@@ -25,7 +25,7 @@ library(lavaan)
 ## load data dump from disk
 ## ========================================================================= ##
 
-# load(file = file.path(path_tmp, "results-all_2021-05-21--21-37-38---e91be763.Rdata"))
+# load(file = file.path(path_tmp, "results-all_2021-06-20--21-56-02---40d3cc92.Rdata"))
 
 ## ========================================================================= ##
 ## CFA models
