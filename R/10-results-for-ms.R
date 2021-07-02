@@ -34,6 +34,11 @@ set_flextable_defaults(
   big.mark = ""
 )
 
+## ========================================================================= ##
+## function definitions
+## ========================================================================= ##
+
+
 construct_modelname <- function(x) {
   plyr::revalue(x,
                 c(
@@ -53,6 +58,38 @@ construct_modelname <- function(x) {
 }
 
 ## ========================================================================= ##
+## global variables
+## ========================================================================= ##
+
+## model order in ms tables:
+
+##  1 Zigmond & Snaith (1983)
+##  2 Razavi et al. (1990)
+##  3 Moorey et al. (1991)
+##  8 Zigmond & Snaith (1983; 13 items)
+##  9 Zigmond & Snaith (1983; 12 items)
+##  5 Friedman et al. (2001)
+##  7 Emons et al. (2012)
+##  4 Dunbar et al. (2000; constr.)
+##  6 Caci et al. (2003; constr.)
+
+dat_order <- tribble(
+  ~sort_order, ~model,
+  10, "zigmond_2f_cor",
+  20, "razavi_1f",
+  30, "moorey_2f_cor",
+  80, "zigmond_mod01_2f_cor",
+  90, "zigmond_mod02_2f_cor",
+  40, "dunbar_3f_cor",
+  50, "friedman_3f_cor",
+  60, "caci_3f_cor",
+  70, "emons_2f_cor",
+  41, "dunbar_3f_cor_constr",
+  61, "caci_3f_cor_constr"
+)
+
+
+## ========================================================================= ##
 ## CFA model results
 ## ========================================================================= ##
 
@@ -62,6 +99,8 @@ construct_modelname <- function(x) {
 
 ## create tibble:
 res_cfa_ms <- res_cfa_mlr %>%
+  left_join(dat_order, by = "model") %>%
+  arrange(sort_order) %>%
   select(
     model, 
     #npar, 
@@ -197,8 +236,23 @@ purrr::map(res_cfa_mlr$fit, function(.x) {
 ## MI tables
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
 
+add_constraint_order <- function(dat) {
+  n_models <- length(unique(dat$model))
+  n_grps <- length(unique(dat$group))
+  n_constraints <- nrow(dat) / (n_models * n_grps)
+  mutate(dat,
+         constraint_order = rep(1:6, (n_models * n_grps))
+         )
+}
+
+## TODO: arrange might not work, yet; 
+## needs to be arranged by group and constraint, too
+
 ## create tibble with relevant results:
 res_mi_ms <- res_mi_mlr %>% 
+  add_constraint_order %>%
+  left_join(dat_order, by = "model") %>%
+  arrange(sort_order, group, constraint_order) %>%
   select(model, 
          group, 
          constraint, 
