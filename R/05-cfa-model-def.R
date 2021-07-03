@@ -36,6 +36,11 @@ models_cfa <- list(
       f1 =~ i_01 + i_03 + i_05 + i_07 + i_09 + i_11 + i_13  ## anxiety
       f2 =~ i_02 + i_04 + i_06 + i_08 + i_10 + i_12 + i_14  ## depression
   ",
+  "zigmond_man_2f_cor" = "
+      ## Zigmond & Snaith, 1983, but with mandatory items only
+      f1 =~ i_01 + i_03 + i_05 + i_09  ## anxiety
+      f2 =~ i_02 + i_04 + i_06 + i_12  ## depression
+  ",
   "razavi_1f" = paste0(
      "## Razavi et al., 1990
       f1 =~ ", paste(varnames_fa, collapse = " + ")

@@ -43,6 +43,7 @@ construct_modelname <- function(x) {
   plyr::revalue(x,
                 c(
                   "zigmond_2f_cor" = "Zigmond & Snaith (1983)",
+                  "zigmond_man_2f_cor" = "Zigmond & Snaith (1983; 8 items)",
                   "razavi_1f" = "Razavi et al. (1990)",
                   "moorey_2f_cor" = "Moorey et al. (1991)",
                   "zigmond_mod01_2f_cor" = "Zigmond & Snaith (1983; 13 items)",
@@ -63,19 +64,10 @@ construct_modelname <- function(x) {
 
 ## model order in ms tables:
 
-##  1 Zigmond & Snaith (1983)
-##  2 Razavi et al. (1990)
-##  3 Moorey et al. (1991)
-##  8 Zigmond & Snaith (1983; 13 items)
-##  9 Zigmond & Snaith (1983; 12 items)
-##  5 Friedman et al. (2001)
-##  7 Emons et al. (2012)
-##  4 Dunbar et al. (2000; constr.)
-##  6 Caci et al. (2003; constr.)
-
 dat_order <- tribble(
   ~sort_order, ~model,
   10, "zigmond_2f_cor",
+  11, "zigmond_man_2f_cor",
   20, "razavi_1f",
   30, "moorey_2f_cor",
   80, "zigmond_mod01_2f_cor",
