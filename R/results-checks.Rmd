@@ -94,7 +94,7 @@ add_cell_spec <- function(df) {
 ```
 
 ```{r, echo=FALSE, results='hide'}
-load("../tmp/results-all_2021-06-20--21-56-02---40d3cc92.Rdata")
+load("../tmp/results-all_2021-07-03--10-21-35---f3d511da.Rdata")
 ```
 
 # CFA
