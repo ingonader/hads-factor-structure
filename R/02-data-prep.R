@@ -195,7 +195,7 @@ nrow(dat_fa)
 ## ========================================================================= ##
 
 ## median date:
-date_med <- median(dat_all$t1_datum, na.rm = TRUE)
+date_med <- median(dat_fa$t1_datum, na.rm = TRUE)
 
 ## add grouping variables:
 dat_fa <- dat_fa %>%
