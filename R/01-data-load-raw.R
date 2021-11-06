@@ -18,7 +18,7 @@
 ## ========================================================================= ##
 
 ## define filename of data file:
-filename_dat <- "210617_HADS_Psychometrie_v3.sav"
+filename_dat <- "211104_HADS_Psychometrie_v4_Diagnosen.sav"
 
 ## read data and sanitize names:
 dat_raw <- read_sav(file.path(path_dat, filename_dat))
