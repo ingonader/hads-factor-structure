@@ -185,9 +185,10 @@ nrow(dat_all)
 #dat_all %>% filter((yr >= 2013) | is.na(yr)) %>% nrow()
 #dat_all %>% filter((yr >= 2013)) %>% nrow()
 
-## exclude responders that have missing values:
+## exclude responders that have missing values in HADS or age variable:
 dat_fa <- dat_all %>%
-  filter(miss_item_hads == 0)
+  filter(miss_item_hads == 0) %>%
+  filter(!is.na(t1_alter_both))
 nrow(dat_fa)
 
 ## ========================================================================= ##
@@ -200,7 +201,7 @@ date_med <- median(dat_fa$t1_datum, na.rm = TRUE)
 ## add grouping variables:
 dat_fa <- dat_fa %>%
   mutate(
-    t1_alter_grp2 = cut_number(t1_alter_both, n = 2),
+    t1_alter_grp2 = cut_number(t1_alter_both, n = 2, right = FALSE),
     t1_datum_grp2 = ifelse(
       t1_datum <= date_med,
       paste0("<=", date_med),
