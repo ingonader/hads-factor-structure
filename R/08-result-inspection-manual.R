@@ -162,7 +162,9 @@ res_mi_mlr %>% filter(status != "success") %>%
            stringr::str_replace_all(".*lavaan WARNING: ", "") %>%
            stringr::str_replace_all('use lavInspect.*$', "") %>%
            stringr::str_replace_all("[[:blank:][:cntrl:]]+", " ")) %>%
-  group_by(model, group, status_msg) %>% count()
+  group_by(model, group, status_msg) %>% 
+  count() %>%
+  View()
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
 ## inspect one of the fitted models:
