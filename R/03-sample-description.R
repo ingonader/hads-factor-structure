@@ -56,6 +56,14 @@ range(dat_fa$t1_alter, na.rm = TRUE)
 range(dat_fa$t1_alter_calc, na.rm = TRUE)
 range(dat_fa$t1_alter_both, na.rm = TRUE)
 
+sum(is.na(dat_fa$t1_alter_grp2))
+
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
+## check diagnosis
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
+
+sum(is.na(dat_fa$t1_tumorart))
+dim(dat_fa)
 
 ## ========================================================================= ##
 ## test assumptions
