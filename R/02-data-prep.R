@@ -187,8 +187,7 @@ nrow(dat_all)
 
 ## exclude responders that have missing values in HADS or age variable:
 dat_fa <- dat_all %>%
-  filter(miss_item_hads == 0) %>%
-  filter(!is.na(t1_alter_both))
+  filter(miss_item_hads == 0)
 nrow(dat_fa)
 
 ## ========================================================================= ##
