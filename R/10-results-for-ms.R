@@ -228,12 +228,12 @@ purrr::map(res_cfa_mlr$fit, function(.x) {
 ## MI tables
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
 
-add_constraint_order <- function(dat) {
+add_constraint_order <- function(dat, n_mi_models = 6) {
   n_models <- length(unique(dat$model))
   n_grps <- length(unique(dat$group))
   n_constraints <- nrow(dat) / (n_models * n_grps)
   mutate(dat,
-         constraint_order = rep(1:6, (n_models * n_grps))
+         constraint_order = rep(1:n_mi_models, (n_models * n_grps))
          )
 }
 
@@ -242,7 +242,8 @@ add_constraint_order <- function(dat) {
 
 ## create tibble with relevant results:
 res_mi_ms <- res_mi_mlr %>% 
-  add_constraint_order %>%
+  filter(constraint != "strict") %>%  ## TODO: remove "strict" invariance
+  add_constraint_order(n_mi_models = 5) %>%
   left_join(dat_order, by = "model") %>%
   arrange(sort_order, group, constraint_order) %>%
   select(model, 
@@ -346,7 +347,7 @@ cbp1 <- c("#999999", "#E69F00", "#56B4E9", "#009E73",
 
 ## create plotting data:
 dat_plot <- res_mi_mlr %>%
-  filter(constraint %in% c("metric", "scalar", "strict")) %>%
+  filter(constraint %in% c("metric", "scalar")) %>%
   filter(!(model %in% c("dunbar_3f_cor", "caci_3f_cor"))) %>%
   mutate(model = construct_modelname(model))
   
@@ -355,13 +356,13 @@ dat_plot <- res_mi_mlr %>%
 plot_mi_mlr <- dat_plot %>%
   ggplot(aes(x = forcats::fct_relevel(constraint,
                                       "metric", 
-                                      "scalar", 
-                                      "strict"),
+                                      "scalar"),
              y = cfi_robust_diff, 
              color = group,
              fill = group, 
              group = group)) + 
   geom_bar(position="dodge", stat="identity", width = .4) +
+  #geom_hline(yintercept = -0.003, linetype = "dashed", color = "darkgrey", alpha = .6) + 
   geom_hline(yintercept = -0.01, linetype = "dashed", color = "darkgrey", alpha = .8) + 
   scale_fill_manual(
     name = "Grouping Variable",
@@ -385,3 +386,5 @@ plot_mi_mlr <- dat_plot %>%
 plot_mi_mlr
 
 ggsave(filename = file.path(path_plot, "fig-mi-02-mlr.jpg"), width = 8, height = 5, scale = 1.5, dpi = 600)
+ggsave(filename = file.path(path_ms, "fig-mi-02-mlr.jpg"), width = 8, height = 5, scale = 1.5, dpi = 600)
+
