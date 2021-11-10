@@ -52,7 +52,7 @@ dat_all <- dat_raw
 dat_all <- dat_all %>% 
   mutate(
     t1_alter_calc = time_length(dat_all$t1_datum - dat_all$geburtsdatum, "years"),
-    t1_alter_both = coalesce(floor(t1_alter_calc), t1_alter)
+    t1_alter_both = coalesce(t1_alter, floor(t1_alter_calc))
   )
 
 ## check t1_alter with calculated age:
@@ -196,6 +196,7 @@ nrow(dat_fa)
 
 ## median date:
 date_med <- median(dat_fa$t1_datum, na.rm = TRUE)
+age_med <- median(dat_fa$t1_alter_both, na.rm = TRUE)
 
 ## add grouping variables:
 dat_fa <- dat_fa %>%
@@ -210,6 +211,9 @@ dat_fa <- dat_fa %>%
   )
 
 # check groupings:
+# table(dat_fa$t1_alter_grp2)
+# table(dat_fa$t1_alter_both >= age_med)
+# dat_fa %>% group_by(t1_alter_both) %>% summarize(n = n()) %>% mutate(n_cum = cumsum(n), rest = sum(n) - n_cum, diff = n_cum - rest, perc_cum = n_cum / sum(n)) %>% filter(t1_alter_both > 55, t1_alter_both < 65)
 # dat_all$t1_alter_grp3
 # dat_all$t1_datum_grp2 %>% table(useNA = "if")
 # dat_all %>% group_by(t1_datum_grp2) %>%
