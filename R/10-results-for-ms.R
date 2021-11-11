@@ -350,7 +350,6 @@ dat_plot <- res_mi_mlr %>%
   filter(constraint %in% c("metric", "scalar")) %>%
   filter(!(model %in% c("dunbar_3f_cor", "caci_3f_cor"))) %>%
   mutate(model = construct_modelname(model))
-  
 
 ## plot delta CFI:
 plot_mi_mlr <- dat_plot %>%
@@ -367,13 +366,13 @@ plot_mi_mlr <- dat_plot %>%
   scale_fill_manual(
     name = "Grouping Variable",
     breaks = c("t1_alter_grp2", "t1_datum_grp2", "t1_geschlecht", "tumorart"),
-    labels = c("Age", "Time of reponse", "Sex", "Tumor type"),
+    labels = c("Age", "Time of reponse", "Gender", "Tumor type"),
     values = cbp1
   ) +
   scale_color_manual(
     name = "Grouping Variable",
     breaks = c("t1_alter_grp2", "t1_datum_grp2", "t1_geschlecht", "tumorart"),
-    labels = c("Age", "Time of reponse", "Sex", "Tumor type"),
+    labels = c("Age", "Time of reponse", "Gender", "Tumor type"),
     values = cbp1
     
   ) +
