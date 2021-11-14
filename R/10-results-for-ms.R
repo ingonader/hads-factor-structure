@@ -51,6 +51,8 @@ construct_modelname <- function(x) {
                   "dunbar_3f_cor" = "Dunbar et al. (2000)",
                   "friedman_3f_cor" = "Friedman et al. (2001)",
                   "caci_3f_cor" = "Caci et al. (2003)",
+                  "smith_1f" = "Smith (2006; one-factor solution)",
+                  "smith_2f" = "Smith (2006; two-factor solution)",
                   "emons_2f_cor" = "Emons et al. (2012)",
                   "dunbar_3f_cor_constr" = "Dunbar et al. (2000; constr.)",
                   "caci_3f_cor_constr" = "Caci et al. (2003; constr.)"
@@ -70,14 +72,16 @@ dat_order <- tribble(
   11, "zigmond_man_2f_cor",
   20, "razavi_1f",
   30, "moorey_2f_cor",
-  80, "zigmond_mod01_2f_cor",
-  90, "zigmond_mod02_2f_cor",
   40, "dunbar_3f_cor",
+  41, "dunbar_3f_cor_constr",
   50, "friedman_3f_cor",
   60, "caci_3f_cor",
+  61, "caci_3f_cor_constr",
+  65, "smith_1f",
+  66, "smith_2f",
   70, "emons_2f_cor",
-  41, "dunbar_3f_cor_constr",
-  61, "caci_3f_cor_constr"
+  80, "zigmond_mod01_2f_cor",
+  90, "zigmond_mod02_2f_cor"
 )
 
 

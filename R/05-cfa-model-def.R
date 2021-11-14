@@ -45,6 +45,15 @@ models_cfa <- list(
      "## Razavi et al., 1990
       f1 =~ ", paste(varnames_fa, collapse = " + ")
   ),
+  "smith_1f" = "
+      ## Smith, 2006, Excluded items 10, 11, 14 from one-factor solution
+      f1 =~ i_01 + i_02 + i_03 + i_04 + i_05 + i_06 + i_07 + i_08 + i_09 + i_12 + i_13
+  ",
+  "smith_2f" = "
+      ## Smith, 2006, Excluded items 10 and 11 from two-factor solution
+      f1 =~ i_01 + i_03 + i_05 + i_07 + i_09 + i_13  ## anxiety
+      f2 =~ i_02 + i_04 + i_06 + i_08 + i_12 + i_14  ## depression
+  ",
   "moorey_2f_cor" = "
       ## Moorey et al., 1991
       f1 =~ i_01 + i_03 + i_05 + i_09 + i_11 + i_13                ## anxiety
