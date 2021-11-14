@@ -46,8 +46,6 @@ construct_modelname <- function(x) {
                   "zigmond_man_2f_cor" = "Zigmond & Snaith (1983; 8 items)",
                   "razavi_1f" = "Razavi et al. (1990)",
                   "moorey_2f_cor" = "Moorey et al. (1991)",
-                  "zigmond_mod01_2f_cor" = "Zigmond & Snaith (1983; 13 items)",
-                  "zigmond_mod02_2f_cor" = "Zigmond & Snaith (1983; 12 items)",
                   "dunbar_3f_cor" = "Dunbar et al. (2000)",
                   "friedman_3f_cor" = "Friedman et al. (2001)",
                   "caci_3f_cor" = "Caci et al. (2003)",
@@ -55,7 +53,9 @@ construct_modelname <- function(x) {
                   "smith_2f" = "Smith (2006; two-factor solution)",
                   "emons_2f_cor" = "Emons et al. (2012)",
                   "dunbar_3f_cor_constr" = "Dunbar et al. (2000; constr.)",
-                  "caci_3f_cor_constr" = "Caci et al. (2003; constr.)"
+                  "caci_3f_cor_constr" = "Caci et al. (2003; constr.)",
+                  "zigmond_mod01_2f_cor" = "13-item model",
+                  "zigmond_mod02_2f_cor" = "12-item model"
                 )
   )
 }

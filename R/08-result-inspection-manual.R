@@ -32,9 +32,9 @@ library(lavaan)
 ## ========================================================================= ##
 
 ## inspect results:
-res_cfa_mlr %>% select(model, npar, cfi, cfi.scaled, cfi.robust, rmsea, rmsea.scaled, rmsea.robust, status, status_msg)
-res_cfa_mlr %>% select(model, npar, cfi.robust, rmsea.robust, status)
-res_cfa_mlr %>% select(model, npar, cfi.robust, rmsea.robust, status) %>% arrange(model)
+res_cfa_mlr %>% select(model, npar, df, cfi, cfi.scaled, cfi.robust, rmsea, rmsea.scaled, rmsea.robust, status, status_msg)
+res_cfa_mlr %>% select(model, npar, df, cfi.robust, rmsea.robust, status)
+res_cfa_mlr %>% select(model, npar, df, cfi.robust, rmsea.robust, status) %>% arrange(model)
 
 #' robust RMSEA and CFI values are computed following 
 #' Brosseau-Liard, P. E., Savalei, V., and Li, L. (2012), and 
