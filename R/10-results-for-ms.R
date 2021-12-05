@@ -374,13 +374,13 @@ plot_mi_mlr <- dat_plot %>%
   scale_fill_manual(
     name = "Grouping Variable",
     breaks = c("t1_alter_grp2", "t1_datum_grp2", "t1_geschlecht", "tumorart"),
-    labels = c("Age", "Time of reponse", "Gender", "Tumor type"),
+    labels = c("Age", "Time of reponse", "Gender", "Cancer type"),
     values = cbp1
   ) +
   scale_color_manual(
     name = "Grouping Variable",
     breaks = c("t1_alter_grp2", "t1_datum_grp2", "t1_geschlecht", "tumorart"),
-    labels = c("Age", "Time of reponse", "Gender", "Tumor type"),
+    labels = c("Age", "Time of reponse", "Gender", "Cancer type"),
     values = cbp1
     
   ) +
