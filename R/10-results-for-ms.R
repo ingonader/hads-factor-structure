@@ -395,3 +395,15 @@ plot_mi_mlr
 ggsave(filename = file.path(path_plot, "fig-mi-02-mlr.jpg"), width = 8, height = 5, scale = 1.5, dpi = 600)
 ggsave(filename = file.path(path_ms, "fig-mi-02-mlr.jpg"), width = 8, height = 5, scale = 1.5, dpi = 600)
 
+## ========================================================================= ##
+## Internal consistency
+## ========================================================================= ##
+
+## define varnames for the final scales (with 2 items included, in total):
+varnames_zigmond_mod02_anx <- c("i_01", "i_03", "i_05", "i_09", "i_11", "i_13")
+varnames_zigmond_mod02_depr <- c("i_02", "i_04", "i_06", "i_08", "i_12", "i_14")
+
+## calculate cronbach alpha for final scales:
+psych::alpha(dat_fa[varnames_zigmond_mod02_anx], check.keys = TRUE)$total$raw_alpha
+psych::alpha(dat_fa[varnames_zigmond_mod02_depr], check.keys = TRUE)$total$raw_alpha
+
