@@ -65,7 +65,7 @@ models_cfa <- list(
       f2 =~ i_02 + i_04 + i_06 + i_08 + i_10 + i_12 + i_14   ## depression
   ",
   "zigmond_mod02_2f_cor" = "
-      ## 2 correlated factors, item 7 excluded
+      ## 2 correlated factors, items 7 and 10 excluded
       f1 =~ i_01 + i_03 + i_05 + i_09 + i_11 + i_13          ## anxiety
       f2 =~ i_02 + i_04 + i_06 + i_08 + i_12 + i_14          ## depression
   ",
