@@ -39,25 +39,48 @@ set_flextable_defaults(
 ## ========================================================================= ##
 
 
-construct_modelname <- function(x) {
-  plyr::revalue(x,
-                c(
-                  "zigmond_2f_cor" = "Zigmond & Snaith (1983)",
-                  "zigmond_man_2f_cor" = "Zigmond & Snaith (1983; 8 items)",
-                  "razavi_1f" = "Razavi et al. (1990)",
-                  "moorey_2f_cor" = "Moorey et al. (1991)",
-                  "dunbar_3f_cor" = "Dunbar et al. (2000)",
-                  "friedman_3f_cor" = "Friedman et al. (2001)",
-                  "caci_3f_cor" = "Caci et al. (2003)",
-                  "smith_1f" = "Smith (2006; one-factor solution)",
-                  "smith_2f" = "Smith (2006; two-factor solution)",
-                  "emons_2f_cor" = "Emons et al. (2012)",
-                  "dunbar_3f_cor_constr" = "Dunbar et al. (2000; constr.)",
-                  "caci_3f_cor_constr" = "Caci et al. (2003; constr.)",
-                  "zigmond_mod01_2f_cor" = "13-item model",
-                  "zigmond_mod02_2f_cor" = "12-item model"
-                )
-  )
+construct_modelname <- function(x, lang = "en") {
+  if (lang == "es") {
+    ret <-   plyr::revalue(x,
+                           c(
+                             "zigmond_2f_cor" = "Zigmond & Snaith (1983)",
+                             "zigmond_man_2f_cor" = "Zigmond & Snaith (1983; 8 items)",
+                             "razavi_1f" = "Razavi et al. (1990)",
+                             "moorey_2f_cor" = "Moorey et al. (1991)",
+                             "dunbar_3f_cor" = "Dunbar et al. (2000)",
+                             "friedman_3f_cor" = "Friedman et al. (2001)",
+                             "caci_3f_cor" = "Caci et al. (2003)",
+                             "smith_1f" = "Smith (2006; solución de un factor)",
+                             "smith_2f" = "Smith (2006; solución de dos factores)",
+                             "emons_2f_cor" = "Emons et al. (2012)",
+                             "dunbar_3f_cor_constr" = "Dunbar et al. (2000; restr.)",
+                             "caci_3f_cor_constr" = "Caci et al. (2003; restr.)",
+                             "zigmond_mod01_2f_cor" = "Modelo de 13 ítems",
+                             "zigmond_mod02_2f_cor" = "Modelo de 12 ítems"
+                           )
+    )
+  } 
+  else {
+    ret <-   plyr::revalue(x,
+                           c(
+                             "zigmond_2f_cor" = "Zigmond & Snaith (1983)",
+                             "zigmond_man_2f_cor" = "Zigmond & Snaith (1983; 8 items)",
+                             "razavi_1f" = "Razavi et al. (1990)",
+                             "moorey_2f_cor" = "Moorey et al. (1991)",
+                             "dunbar_3f_cor" = "Dunbar et al. (2000)",
+                             "friedman_3f_cor" = "Friedman et al. (2001)",
+                             "caci_3f_cor" = "Caci et al. (2003)",
+                             "smith_1f" = "Smith (2006; one-factor solution)",
+                             "smith_2f" = "Smith (2006; two-factor solution)",
+                             "emons_2f_cor" = "Emons et al. (2012)",
+                             "dunbar_3f_cor_constr" = "Dunbar et al. (2000; constr.)",
+                             "caci_3f_cor_constr" = "Caci et al. (2003; constr.)",
+                             "zigmond_mod01_2f_cor" = "13-item model",
+                             "zigmond_mod02_2f_cor" = "12-item model"
+                           )
+    )
+  }
+  return(ret)
 }
 
 ## ========================================================================= ##
@@ -345,9 +368,31 @@ save_as_docx(ft_res_mi, path = file.path(path_ms, "table-measurement-invariance.
 ## stacked bar plot of delta-CFIs
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
 
+## set language:
+lang <- "en"
+#lang <- "es"
+
 ## define colors:
 cbp1 <- c("#999999", "#E69F00", "#56B4E9", "#009E73",
           "#F0E442", "#0072B2", "#D55E00", "#CC79A7")[1:4]
+
+
+category_labels <- list(
+  "en" = c("Age", "Time of reponse", "Gender", "Cancer type"),
+  "es" = c("Edad", "Tiempo de respuesta", "Género", "Tipo de cáncer")
+)
+legend_title <- list(
+  "en" = "Grouping Variable",
+  "es" = "Variable de agrupación"
+)
+y_label <- list(
+  "en" = expression(Delta*"CFI (robust)"),
+  "es" = expression(Delta*"CFI (robusto)")
+)
+x_tick_labels <- list(
+  "en" = c("metric", "scalar"),
+  "es" = c("métrica", "escalar")
+)
 
 ## create plotting data:
 dat_plot <- res_mi_mlr %>%
@@ -355,7 +400,7 @@ dat_plot <- res_mi_mlr %>%
   filter(constraint %in% c("metric", "scalar")) %>%
   filter(!(model %in% c("dunbar_3f_cor", "caci_3f_cor"))) %>%
   mutate(
-    model = construct_modelname(model),
+    model = construct_modelname(model, lang = lang),
     model = forcats::fct_reorder(model, sort_order)
   )
 
@@ -372,28 +417,36 @@ plot_mi_mlr <- dat_plot %>%
   #geom_hline(yintercept = -0.003, linetype = "dashed", color = "darkgrey", alpha = .6) + 
   geom_hline(yintercept = -0.01, linetype = "dashed", color = "darkgrey", alpha = .8) + 
   scale_fill_manual(
-    name = "Grouping Variable",
+    name = legend_title[[lang]],
     breaks = c("t1_alter_grp2", "t1_datum_grp2", "t1_geschlecht", "tumorart"),
-    labels = c("Age", "Time of reponse", "Gender", "Cancer type"),
+    labels = category_labels[[lang]],
     values = cbp1
   ) +
   scale_color_manual(
-    name = "Grouping Variable",
+    name = legend_title[[lang]],
     breaks = c("t1_alter_grp2", "t1_datum_grp2", "t1_geschlecht", "tumorart"),
-    labels = c("Age", "Time of reponse", "Gender", "Cancer type"),
+    labels = category_labels[[lang]],
     values = cbp1
     
+  ) +
+  scale_x_discrete(
+    breaks = c("metric", "scalar"),
+    labels = x_tick_labels[[lang]]
   ) +
   facet_wrap(vars(model)) +
   labs(
     x = "",
-    y = expression(Delta*"CFI (robust)")
+    y = y_label[[lang]]
   ) +
   theme_classic()
 plot_mi_mlr
 
-ggsave(filename = file.path(path_plot, "fig-mi-02-mlr.jpg"), width = 8, height = 5, scale = 1.5, dpi = 600)
-ggsave(filename = file.path(path_ms, "fig-mi-02-mlr.jpg"), width = 8, height = 5, scale = 1.5, dpi = 600)
+ggsave(filename = file.path(path_plot, 
+                            paste0("fig-mi-02-mlr-", lang, ".jpg")), 
+       width = 8, height = 5, scale = 1.5, dpi = 600)
+ggsave(filename = file.path(path_ms, 
+                            paste0("fig-mi-02-mlr-", lang, ".jpg")), 
+       width = 8, height = 5, scale = 1.5, dpi = 600)
 
 ## ========================================================================= ##
 ## Internal consistency
